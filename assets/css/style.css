@@ -1,0 +1,82 @@
+:root {
+	--main-bg-color: #060ce9;
+	--grad-bg-color: #7074e0;
+}
+
+html {
+	height: 100%;
+}
+
+body {
+	margin: auto;
+	background-image: radial-gradient(
+		ellipse,
+		var(--grad-bg-color),
+		var(--main-bg-color)
+	);
+	font-size: 1.5rem;
+	color: white;
+}
+
+.display-1 {
+	color: rgb(241, 157, 60);
+	text-shadow: 2px 2px 3px black;
+	font-size: 1.5rem;
+}
+
+#topRow {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 2%;
+	margin-top: 2%;
+}
+
+#topBox {
+	border: 2px solid black;
+	text-align: center;
+	padding: 5px;
+	box-shadow: 2px 2px 3px black;
+}
+
+#boardContainer {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	border: 2px solid black;
+}
+
+#catContainer {
+	border: 3px solid black;
+	word-wrap: break-word;
+}
+
+#catBox {
+	border: 3px solid black;
+	box-shadow: 2px 2px 3px black;
+	padding: 5px;
+	color: white;
+	text-shadow: 2px 2px 3px black;
+}
+
+#catAContainer {
+	display: flex;
+	flex-direction: row;
+}
+
+#questBox {
+	border: 3px solid black;
+	box-shadow: 2px 2px 3px black;
+	padding: 5px;
+	color: rgb(241, 157, 60);
+	font-weight: 700;
+	font-size: 3vw;
+	text-shadow: 2px 2px 3px black;
+}
+
+#questBox:hover {
+	border: 3px solid white;
+	box-shadow: 2px 2px 3px white;
+}
