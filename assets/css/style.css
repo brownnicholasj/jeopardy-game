@@ -72,11 +72,105 @@ body {
 	padding: 5px;
 	color: rgb(241, 157, 60);
 	font-weight: 700;
-	font-size: 3vw;
+	font-size: 1.75rem;
 	text-shadow: 2px 2px 3px black;
 }
+
+/* #questBox button {
+	color: rgb(241, 157, 60);
+	font-weight: 700;
+	font-size: 1rem;
+	text-shadow: 2px 2px 3px black;
+} */
 
 #questBox:hover {
 	border: 3px solid white;
 	box-shadow: 2px 2px 3px white;
+	cursor: pointer;
+}
+
+.modal-content {
+	background-image: radial-gradient(
+		ellipse,
+		var(--grad-bg-color),
+		var(--main-bg-color)
+	);
+	min-height: 50vh;
+	min-width: 50vw;
+	font-size: 1.5em;
+}
+
+.modal-header {
+	align-items: center;
+	border: 3px solid black;
+	min-height: 15rem;
+}
+
+.modal-header .modal-title {
+	justify-self: flex-start;
+	min-width: 70%;
+	text-align: left;
+	margin-left: 10px;
+	font-size: 2rem;
+}
+
+/* display set to none until ready to show */
+.modal-header #modaltimer {
+	display: none;
+	text-align: right;
+	align-self: flex-start;
+	min-width: 10%;
+}
+
+.modal-body {
+	border: 3px solid black;
+}
+
+.form-control {
+	background-color: var(--main-bg-color);
+	box-shadow: 2px 2px 10px black;
+	min-height: 15rem;
+	align-self: center;
+	font-size: 2rem;
+	color: white;
+}
+
+.form-control:focus {
+	background-color: var(--main-bg-color);
+	box-shadow: 2px 2px 10px black;
+	min-height: 15rem;
+	align-self: center;
+	color: white;
+	font-size: 2rem;
+}
+.modal-title {
+	margin-left: 4px;
+}
+
+.modal-footer {
+	justify-content: center;
+	min-height: 5rem;
+	border: 3px solid black;
+}
+
+.modal-footer .btn {
+	border: 3px solid black;
+	box-shadow: 2px 2px 3px black;
+	padding: 5px;
+	color: white;
+	text-shadow: 2px 2px 3px black;
+	font-size: 2rem;
+}
+
+.modal-footer .btn:hover {
+	border: 3px solid white;
+	box-shadow: 2px 2px 3px white;
+	cursor: pointer;
+}
+
+@media (min-width: 576px) {
+	.modal-dialog {
+		max-width: 768px;
+		margin: 1.75rem auto;
+	}
 }
