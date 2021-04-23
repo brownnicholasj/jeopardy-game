@@ -259,21 +259,25 @@ function createQuestions(container, round) {
 		var questBox = document.createElement('a');
 		questBox.setAttribute('class', 'col col-md-12');
 		questBox.setAttribute('id', 'questBox');
-		var questHead = document.createElement('button');
+		// var questHead = document.createElement('button');
 		// establish value [should pull or match to API]
 		var questValue = Math.imul(categoryQuestions[i], 100);
-		questHead.innerHTML = '$' + questValue;
-		questHead.setAttribute('type', 'button');
-		questHead.setAttribute('class', 'btn');
-		questHead.setAttribute('data-bs-toggle', 'modal');
+		// questHead.innerHTML = '$' + questValue;
+		// questHead.setAttribute('type', 'button');
+		// questHead.setAttribute('class', 'btn');
+		// questHead.setAttribute('data-bs-toggle', 'modal');
 		var categoryFinder =
 			container.children[0].children[0].children[0].textContent;
 		var questId = `${categoryFinder}_${categoryQuestions[i]}`;
 		questId = questId.replace(/\s+/g, '');
-		questHead.setAttribute('data-bs-target', `${questId}`);
-		questBox.append(questHead);
-		createModal(questBox, questId);
+		// questHead.setAttribute('data-bs-target', `#${questId}`);
+		questBox.setAttribute('data-bs-toggle', 'modal');
+		questBox.setAttribute('data-bs-target', `#${questId}`);
+		// questBox.append(questHead);
+		questBox.innerHTML = `$${questValue}`;
 		catAContainer.append(questBox);
+		// console.log(questBox);
+		createModal(catAContainer, questId);
 		container.append(catAContainer);
 	}
 }
@@ -287,20 +291,30 @@ function createModal(container, id) {
 	modalFade.setAttribute('aria-labelledby', id);
 	modalFade.setAttribute('aria-hidden', 'true');
 
-	console.log(modalFade);
+	console.log(container);
 
 	var modalDialog = document.createElement('div');
-	modalDialog.setAttribute('class', 'modal-dialog');
+	modalDialog.setAttribute('class', 'modal-dialog modal-dialog-centered');
 
 	var modalContent = document.createElement('div');
 	modalContent.setAttribute('class', 'modal-content');
 
+	//title for the question, currently in as 'Answer' since jeopardy
 	var modalHeader = document.createElement('div');
 	modalHeader.setAttribute('class', 'modal-header');
+	modalHeader.innerHTML = 'Answer:';
 
+	// store the question here
 	var modalQuestion = document.createElement('h5');
 	modalQuestion.setAttribute('class', 'modal-title');
 	modalQuestion.setAttribute('id', id);
+	modalQuestion.innerHTML = id;
+
+	// store timer
+	var modalTimer = document.createElement('h5');
+	modalTimer.setAttribute('class', 'modal-title');
+	modalTimer.setAttribute('id', 'modaltimer');
+	modalTimer.innerHTML = 5;
 
 	var modalBody = document.createElement('div');
 	modalBody.setAttribute('class', 'modal-body');
@@ -320,12 +334,15 @@ function createModal(container, id) {
 	var modalSubmit = document.createElement('button');
 	modalSubmit.setAttribute('type', 'button');
 	modalSubmit.setAttribute('class', 'btn');
+	modalSubmit.setAttribute('data-dismiss', 'modal');
+	modalSubmit.innerHTML = 'Submit';
 
 	modalFooter.append(modalSubmit);
-	console.log(container.children[0].dataset.bsTarget);
+	// console.log(container.children[0].dataset.bsTarget);
 	modalBody.append(modalInput);
 	modalBody.append(modalLabel);
 	modalHeader.append(modalQuestion);
+	modalHeader.append(modalTimer);
 	modalContent.append(modalHeader, modalBody, modalFooter);
 	modalDialog.append(modalContent);
 	modalFade.append(modalDialog);
