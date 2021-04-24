@@ -193,6 +193,8 @@ function checkLocalStorage() {
 	}
 }
 // This function saves the function's question object to local storage.
+function saveSession(number, object) {
+	localStorage.setItem('category-' + number, JSON.stringify(object));
 function saveSession(object) {
 	localStorage.setItem('currentSession', JSON.stringify(object));
 }
@@ -223,6 +225,49 @@ function callNewQuestions() {
 			});
 	}
 }
+
+//************************************************************ Functions to get JService DATA ********* */
+
+var object = {};
+
+async function getCategories() {
+	var randomNumber = Math.floor(Math.random() * 10000);
+	fetch('https://jservice.io/api/categories?count=6&offset=' + randomNumber)
+		.then(function (response) {
+			return response.json();
+		})
+		.then(function (data) {
+			var allQuestions = {};
+			if (data) {
+				console.log(data);
+				for (let i = 0; i < data.length; i++) {
+					getQuestions(data[i].id).then(function (questionResponse) {
+						allQuestions[data[i].title] = questionResponse;
+						var questionBank = {
+							[data[i].title]: questionResponse,
+						};
+						saveSession(i, questionBank);
+					});
+				}
+			}
+			console.log('FINAL QUESTION BANK :>> ', allQuestions);
+		});
+}
+
+function getQuestions(category) {
+	return fetch('https://jservice.io/api/clues?category=' + category).then(
+		function (response) {
+			return response.json();
+		}
+	);
+}
+
+function startGame() {
+	getCategories();
+}
+
+startGame();
+console.log('object :>> ', object);
 
 //function to create/populate the board
 function createCategories() {
