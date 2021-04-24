@@ -415,8 +415,8 @@ function handleButtonClick(event) {
 	event.preventDefault();
 	if (event.target.id === 'submit') {
 		var answerValue =
-			event.target.parentNode.parentNode.childNodes[1].childNodes[0].childNodes[0]
-				.childNodes[0].value;
+			event.target.parentNode.parentNode.childNodes[1].childNodes[0]
+				.childNodes[0].childNodes[0].value;
 		//currently just console logging answer until we can do something
 		console.log(answerValue);
 	}
