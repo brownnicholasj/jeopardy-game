@@ -1,156 +1,9 @@
-// This is the first draft of the persistant session object. I organized it for ease of use in iteration, but when we get there we may need to make adjustments.
-let sessionQuestions = {
-	category1: {
-		valule: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		question: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		answer: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-	},
-	category2: {
-		valule: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		question: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		answer: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-	},
-	category3: {
-		valule: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		question: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		answer: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-	},
-	category4: {
-		valule: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		question: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		answer: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-	},
-	category5: {
-		valule: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		question: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		answer: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-	},
-	category6: {
-		valule: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		question: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		answer: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-	},
-};
+// delegation event listener for board
+var answerSubmit = document.getElementById('boardContainer');
 
-let mathFacts = {
-	fact1: { number: '', text: '' },
-	fact2: { number: '', text: '' },
-	fact3: { number: '', text: '' },
-	fact4: { number: '', text: '' },
-	fact5: { number: '', text: '' },
-	fact6: { number: '', text: '' },
-};
 //Function that gives user the option to reload their last session. The internal code at this point is arbitrary, but I wanted something there for testing the functionality.
 function continueLastGame() {
-	$('#testdiv').append('<div id="continue"></div>');
+	$('#boardContainer').append('<div id="continue"></div>');
 	let continueDiv = $('#continue');
 	continueDiv.append('<p>Saved game detected. Continue?</p>');
 	continueDiv.append('<button id="confirmSave">Yes</button>');
@@ -159,11 +12,11 @@ function continueLastGame() {
 	let playNew = $('#confirmNew');
 	playSave.on('click', function (event) {
 		event.preventDefault();
-		loadQuestionSpace('confirmSave');
+		createCategories();
 	});
 	playNew.on('click', function (event) {
 		event.preventDefault();
-		loadQuestionSpace('confirmNew');
+		createCategories();
 	});
 }
 
@@ -180,6 +33,7 @@ function loadQuestionSpace(choice) {
 		sessionQuestions = JSON.parse(localStorage.getItem('currentSession'));
 	}
 }
+
 //This function checks local storage for a saved game and returns the option to continue if it exists, or a new game if it doesn't.
 function checkLocalStorage() {
 	if (localStorage.getItem('currentSession')) {
@@ -192,39 +46,12 @@ function checkLocalStorage() {
 // This function saves the function's question object to local storage.
 function saveSession(number, object) {
 	localStorage.setItem('category-' + number, JSON.stringify(object));
+
 }
+
 function saveSession(object) {
 	localStorage.setItem('currentSession', JSON.stringify(object));
 }
-
-//#####################################TESTING ITERATED FETCH CALLS################################
-//testing for the population of the session questions.
-
-function callNewQuestions() {
-	// Empty array for storing the randomly generated categories.
-	let categoryArray = [];
-	// Iterating through the possible categories to randomly assign 6. No dublicate testing yet, but we need it.
-	for (let i = 0; i < 6; i++) {
-		categoryArray.push(Math.floor(Math.random() * categories.length));
-	}
-	// Looping fetch call from a number facts API (for testing purposes only) based on the categories that were randomly selected.
-	for (let i = 0; i < categoryArray.length; i++) {
-		let keyArray = ['fact1', 'fact2', 'fact3', 'fact4', 'fact5', 'fact6'];
-		fetch(`http://numbersapi.com/${categoryArray[i]}/math?json`)
-			.then((response) => response.json())
-			.then(function (data) {
-				// Populating the object from which the questions will be rendered. There needs to be a step in between here where we look at questions and values in order to select a whole category. My suspicion is that we'll need to build an array within the scope of this function to contain the data in order to work with it.
-				mathFacts[keyArray[i]].number = data.number;
-				mathFacts[keyArray[i]].text = data.text;
-			})
-			.then(function (data) {
-				// This calls the function that puts our finished category set into local storage.
-				saveSession(mathFacts);
-			});
-	}
-}
-//callNewQuestions();
-checkLocalStorage();
 
 //************************************************************ Functions to get JService DATA ********* */
 
@@ -268,11 +95,11 @@ async function getQuestions(category) {
 	return data;
 }
 
-playGame();
-
 //function to create/populate the board
 function createCategories(categoryArray) {
 	var boardContainer = document.getElementById('boardContainer');
+    let bContainerJq = $('#boardContainer');
+    bContainerJq.empty();
 	//storing all needed categories here??
 	// var categoryArray = [1, 2, 3, 4, 5, 6];
 	for (var i = 0; i < categoryArray.length; i++) {
@@ -403,6 +230,7 @@ function createModal(container, id) {
 	container.append(modalFade);
 }
 
+
 //function to handle the submit event (pressing 'enter' after input)
 function handleFormSubmit(event) {
 	event.preventDefault();
@@ -422,10 +250,13 @@ function handleButtonClick(event) {
 	}
 }
 
+//pulls up last saved game (if detected) -- will run generate board out of that
 checkLocalStorage();
-//generate board
-// createCategories();
+// start of game here
+playGame();
+
 
 //event Listeners
-// answerSubmit.addEventListener('submit', handleFormSubmit);
-// answerSubmit.addEventListener('click', handleButtonClick);
+answerSubmit.addEventListener('submit', handleFormSubmit);
+answerSubmit.addEventListener('click', handleButtonClick);
+
