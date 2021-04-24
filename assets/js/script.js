@@ -345,7 +345,6 @@ function createModal(container, id) {
 	modalSubmit.innerHTML = 'Submit';
 
 	modalFooter.append(modalSubmit);
-	// console.log(container.children[0].dataset.bsTarget);
 	modalFgroup.append(modalInput);
 	modalFgroup.append(modalLabel);
 	modalForm.append(modalFgroup);
