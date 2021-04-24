@@ -143,17 +143,9 @@ let sessionQuestions = {
 	},
 };
 
-let mathFacts = {
-	fact1: { number: '', text: '' },
-	fact2: { number: '', text: '' },
-	fact3: { number: '', text: '' },
-	fact4: { number: '', text: '' },
-	fact5: { number: '', text: '' },
-	fact6: { number: '', text: '' },
-};
 //Function that gives user the option to reload their last session. The internal code at this point is arbitrary, but I wanted something there for testing the functionality.
 function continueLastGame() {
-	$('#testdiv').append('<div id="continue"></div>');
+	$('#boardContainer').append('<div id="continue"></div>');
 	let continueDiv = $('#continue');
 	continueDiv.append('<p>Saved game detected. Continue?</p>');
 	continueDiv.append('<button id="confirmSave">Yes</button>');
@@ -162,11 +154,11 @@ function continueLastGame() {
 	let playNew = $('#confirmNew');
 	playSave.on('click', function (event) {
 		event.preventDefault();
-		loadQuestionSpace('confirmSave');
+		createCategories();
 	});
 	playNew.on('click', function (event) {
 		event.preventDefault();
-		loadQuestionSpace('confirmNew');
+		createCategories();
 	});
 }
 
@@ -272,6 +264,8 @@ console.log('object :>> ', object);
 //function to create/populate the board
 function createCategories() {
 	var boardContainer = document.getElementById('boardContainer');
+    let bContainerJq = $('#boardContainer');
+    bContainerJq.empty();
 	//storing all needed categories here??
 	var categoryName = [1, 2, 3, 4, 5, 6];
 	for (var i = 0; i < categoryName.length; i++) {
@@ -402,6 +396,9 @@ function createModal(container, id) {
 	container.append(modalFade);
 }
 
+
+//createCategories();
+
 //function to handle the submit event (pressing 'enter' after input)
 function handleFormSubmit(event) {
 	event.preventDefault();
@@ -429,3 +426,4 @@ createCategories();
 //event Listeners
 answerSubmit.addEventListener('submit', handleFormSubmit);
 answerSubmit.addEventListener('click', handleButtonClick);
+
