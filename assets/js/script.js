@@ -1,3 +1,6 @@
+// delegation event listener for board
+var answerSubmit = document.getElementById('boardContainer');
+
 // This is the first draft of the persistant session object. I organized it for ease of use in iteration, but when we get there we may need to make adjustments.
 let sessionQuestions = {
 	category1: {
@@ -220,8 +223,6 @@ function callNewQuestions() {
 			});
 	}
 }
-//callNewQuestions();
-checkLocalStorage();
 
 //function to create/populate the board
 function createCategories() {
@@ -290,8 +291,8 @@ function createModal(container, id) {
 	modalFade.setAttribute('tabindex', '-1');
 	modalFade.setAttribute('aria-labelledby', id);
 	modalFade.setAttribute('aria-hidden', 'true');
-
-	console.log(container);
+	modalFade.setAttribute('data-bs-keyboard', 'false');
+	modalFade.setAttribute('data-bs-backdrop', 'static');
 
 	var modalDialog = document.createElement('div');
 	modalDialog.setAttribute('class', 'modal-dialog modal-dialog-centered');
@@ -312,12 +313,17 @@ function createModal(container, id) {
 
 	// store timer
 	var modalTimer = document.createElement('h5');
-	modalTimer.setAttribute('class', 'modal-title');
+	modalTimer.setAttribute('class', 'modal-timer');
 	modalTimer.setAttribute('id', 'modaltimer');
-	modalTimer.innerHTML = 5;
+	// set interval timer here
+	modalTimer.innerHTML = 10;
 
 	var modalBody = document.createElement('div');
 	modalBody.setAttribute('class', 'modal-body');
+
+	var modalForm = document.createElement('form');
+	var modalFgroup = document.createElement('div');
+	modalFgroup.setAttribute('class', 'form-group');
 
 	var modalInput = document.createElement('input');
 	modalInput.setAttribute('type', 'answer');
@@ -333,14 +339,16 @@ function createModal(container, id) {
 
 	var modalSubmit = document.createElement('button');
 	modalSubmit.setAttribute('type', 'button');
+	modalSubmit.setAttribute('id', 'submit');
 	modalSubmit.setAttribute('class', 'btn');
-	modalSubmit.setAttribute('data-dismiss', 'modal');
+	modalSubmit.setAttribute('data-bs-dismiss', 'modal');
 	modalSubmit.innerHTML = 'Submit';
 
 	modalFooter.append(modalSubmit);
-	// console.log(container.children[0].dataset.bsTarget);
-	modalBody.append(modalInput);
-	modalBody.append(modalLabel);
+	modalFgroup.append(modalInput);
+	modalFgroup.append(modalLabel);
+	modalForm.append(modalFgroup);
+	modalBody.append(modalForm);
 	modalHeader.append(modalQuestion);
 	modalHeader.append(modalTimer);
 	modalContent.append(modalHeader, modalBody, modalFooter);
@@ -349,4 +357,30 @@ function createModal(container, id) {
 	container.append(modalFade);
 }
 
+//function to handle the submit event (pressing 'enter' after input)
+function handleFormSubmit(event) {
+	event.preventDefault();
+	// Traverse DOM to click the button [Hitting Enter does same thing as clicking button]
+	event.target.parentNode.parentNode.childNodes[2].childNodes[0].click();
+}
+
+//function to handle the clicking of the 'Submit' button inside the modal -- directs to the handleFormSubmit
+function handleButtonClick(event) {
+	event.preventDefault();
+	if (event.target.id === 'submit') {
+		var answerValue =
+			event.target.parentNode.parentNode.childNodes[1].childNodes[0]
+				.childNodes[0].childNodes[0].value;
+		//currently just console logging answer until we can do something
+		console.log(answerValue);
+	}
+}
+
+//callNewQuestions();
+checkLocalStorage();
+//generate board
 createCategories();
+
+//event Listeners
+answerSubmit.addEventListener('submit', handleFormSubmit);
+answerSubmit.addEventListener('click', handleButtonClick);
