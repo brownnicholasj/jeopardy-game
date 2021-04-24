@@ -358,20 +358,11 @@ function createModal(container, id) {
 	container.append(modalFade);
 }
 
-//function to handle the answer from the modal -- currently just console logs until we know how to evaluate
-//Need to add close
+//function to handle the submit event (pressing 'enter' after input)
 function handleFormSubmit(event) {
 	event.preventDefault();
-
-	if (event.target.id === 'submit') {
-		var answerValue =
-			event.target.parentNode.parentNode.childNodes[1].childNodes[0]
-				.childNodes[0].childNodes[0].value;
-		console.log(answerValue);
-	} else {
-		// Traverse DOM to click the button [Hitting Enter does same thing as clicking button]
-		event.target.parentNode.parentNode.childNodes[2].childNodes[0].click();
-	}
+	// Traverse DOM to click the button [Hitting Enter does same thing as clicking button]
+	event.target.parentNode.parentNode.childNodes[2].childNodes[0].click();
 }
 
 //function to handle the clicking of the 'Submit' button inside the modal -- directs to the handleFormSubmit
@@ -379,8 +370,10 @@ function handleButtonClick(event) {
 	event.preventDefault();
 	if (event.target.id === 'submit') {
 		var answerValue =
-			event.target.parentNode.parentNode.childNodes[1].childNodes[0].text;
-		handleFormSubmit(event);
+			event.target.parentNode.parentNode.childNodes[1].childNodes[0]
+				.childNodes[0].childNodes[0].value;
+		//currently just console logging answer until we can do something
+		console.log(answerValue);
 	}
 }
 
