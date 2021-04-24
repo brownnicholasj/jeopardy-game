@@ -281,7 +281,40 @@ checkLocalStorage();
 // start of game here
 playGame();
 
+function formQuestion(speechPart) {
+    switch(speechPart.toLowerCase()) {
+        case 'geographical name':
+            return 'Where is ';
+        case 'biographical name':
+            return 'Who is ';
+        default:
+            return 'What is ';
+    }
+}
 
+function defineWord(word) {
+    let output;
+    const regex = /[%!@#$%^&*()_\-+=/]/gm;
+    if (regex.test(word)) {
+        output = 'What is ';
+		//MAP OUTPUT TO THE QUESTIONS DATA OBJECT.
+	} else {
+        let searchUrl = 'https://dictionaryapi.com/api/v3/references/collegiate/json/' + word + '?key=0442cdad-ae0d-4b9d-a484-5df8d0b9fc7d';
+        fetch(searchUrl)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                console.log("Question Data: ",data);
+                if (data && data[0] && data[0].fl) {
+                    output = formQuestion(data[0].fl);
+                } else {
+                    output = 'What is ';
+                }
+			//MAP OUTPUT TO THE QUESTIONS DATA OBJECT. Test
+	})
+    }
+}
 //event Listeners
 answerSubmit.addEventListener('submit', handleFormSubmit);
 answerSubmit.addEventListener('click', handleButtonClick);
