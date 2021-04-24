@@ -43,10 +43,10 @@ function checkLocalStorage() {
 		saveSession();
 	}
 }
+
 // This function saves the function's question object to local storage.
 function saveSession(number, object) {
 	localStorage.setItem('category-' + number, JSON.stringify(object));
-
 }
 
 function saveSession(object) {
@@ -95,11 +95,14 @@ async function getQuestions(category) {
 	return data;
 }
 
+
 //function to create/populate the board
 function createCategories(categoryArray) {
 	var boardContainer = document.getElementById('boardContainer');
+
     let bContainerJq = $('#boardContainer');
     bContainerJq.empty();
+
 	//storing all needed categories here??
 	// var categoryArray = [1, 2, 3, 4, 5, 6];
 	for (var i = 0; i < categoryArray.length; i++) {
@@ -246,12 +249,35 @@ function handleButtonClick(event) {
 			event.target.parentNode.parentNode.childNodes[1].childNodes[0]
 				.childNodes[0].childNodes[0].value;
 		//currently just console logging answer until we can do something
-		console.log(answerValue);
+		// console.log(answerValue);
 	}
 }
 
-//pulls up last saved game (if detected) -- will run generate board out of that
+//function to sum score from each question after answered
+function scoreTally(answer, value) {
+	var totalScore = document.getElementById('scoreBox');
+	var currentScore = Number(totalScore.textContent);
+
+	if (!answer) {
+		var scoreAdd = value * -1;
+		totalScore.textContent = currentScore + scoreAdd;
+	} else {
+		var scoreAdd = value * 1;
+		totalScore.textContent = currentScore + scoreAdd;
+	}
+}
+
+// simulation for score updating
+// scoreTally(true, 100);
+// scoreTally(true, 200);
+// scoreTally(true, 300);
+// scoreTally(true, 400);
+// scoreTally(false, 500);
+
+//callNewQuestions();
 checkLocalStorage();
+//generate board -- goes through checkLocalStorage();
+// createCategories();
 // start of game here
 playGame();
 
@@ -259,4 +285,3 @@ playGame();
 //event Listeners
 answerSubmit.addEventListener('submit', handleFormSubmit);
 answerSubmit.addEventListener('click', handleButtonClick);
-
