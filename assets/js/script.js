@@ -192,6 +192,12 @@ function checkLocalStorage() {
 // This function saves the function's question object to local storage.
 function saveSession(number, object) {
 	localStorage.setItem('category-' + number, JSON.stringify(object));
+<<<<<<< Updated upstream
+=======
+}
+function saveSession(object) {
+	localStorage.setItem('currentSession', JSON.stringify(object));
+>>>>>>> Stashed changes
 }
 
 //#####################################TESTING ITERATED FETCH CALLS################################
@@ -227,41 +233,210 @@ checkLocalStorage();
 
 var object = {};
 
-async function getCategories() {
+async function playGame() {
 	var randomNumber = Math.floor(Math.random() * 10000);
-	fetch('https://jservice.io/api/categories?count=6&offset=' + randomNumber)
-		.then(function (response) {
-			return response.json();
-		})
-		.then(function (data) {
-			var allQuestions = {};
-			if (data) {
-				console.log(data);
-				for (let i = 0; i < data.length; i++) {
-					getQuestions(data[i].id).then(function (questionResponse) {
-						allQuestions[data[i].title] = questionResponse;
-						var questionBank = {
-							[data[i].title]: questionResponse,
-						};
-						saveSession(i, questionBank);
-					});
-				}
-			}
-			console.log('FINAL QUESTION BANK :>> ', allQuestions);
-		});
-}
-
-function getQuestions(category) {
-	return fetch('https://jservice.io/api/clues?category=' + category).then(
-		function (response) {
-			return response.json();
-		}
+	var response = await fetch(
+		'https://jservice.io/api/categories?count=6&offset=' + randomNumber
 	);
+	var data = await response.json();
+	var questionsPull = data;
+	var questionsObject = organizeData(questionsPull);
+	console.log('questionsObject :>> ', questionsObject);
+	console.log(Object.getOwnPropertyNames(questionsObject));
+	console.log(Object.keys(questionsObject));
+	console.log(JSON.parse(JSON.stringify(questionsObject)));
 }
 
-function startGame() {
-	getCategories();
+function organizeData(data) {
+	var allQuestions = {};
+	if (data) {
+		console.log(data);
+		for (let i = 0; i < data.length; i++) {
+			getQuestions(data[i].id).then(function (questionResponse) {
+				allQuestions[data[i].title] = questionResponse;
+				var questionBank = {
+					[data[i].title]: questionResponse,
+				};
+				saveSession(i, questionBank);
+			});
+		}
+	}
+	console.log('FINAL QUESTION BANK: >> ', allQuestions);
+	console.log(Object.keys(allQuestions));
+	console.log(Object.getOwnPropertyNames(allQuestions));
+	return allQuestions;
 }
 
-startGame();
-console.log('object :>> ', object);
+async function getQuestions(category) {
+	var response = await fetch(
+		'http://jservice.io/api/clues?category=' + category
+	);
+	var data = await response.json();
+	return data;
+}
+function testObjectLoop(object) {
+	for (let item in object) {
+		console.log(object[item]);
+	}
+}
+playGame();
+
+//function to create/populate the board
+function createCategories(categoryArray) {
+	var boardContainer = document.getElementById('boardContainer');
+	//storing all needed categories here??
+	// var categoryArray = [1, 2, 3, 4, 5, 6];
+	for (var i = 0; i < categoryArray.length; i++) {
+		var catContainer = document.createElement('div');
+		catContainer.setAttribute('class', 'col-12 col-md-2');
+		catContainer.setAttribute('id', 'catContainer');
+		var catBox = document.createElement('div');
+		catBox.setAttribute('class', 'row');
+		catBox.setAttribute('id', 'catBox');
+		var catHeadcontainer = document.createElement('div');
+		var catHead = document.createElement('h4');
+		catHeadcontainer.setAttribute('class', 'col-12');
+		//update category name here
+		catHead.innerHTML = `Category ${categoryArray[i]}`;
+		catHeadcontainer.append(catHead);
+		catBox.append(catHeadcontainer);
+		catContainer.append(catBox);
+		createQuestions(catContainer);
+		boardContainer.append(catContainer);
+	}
+}
+
+//function to create/populate questions section
+function createQuestions(container, round) {
+	var catAContainer = document.createElement('div');
+	catAContainer.setAttribute('class', 'row');
+	catAContainer.setAttribute('id', 'catAContainer');
+	//storing/pulling questions for related category here
+	var categoryQuestions = [1, 2, 3, 4, 5];
+	for (var i = 0; i < categoryQuestions.length; i++) {
+		var questBox = document.createElement('a');
+		questBox.setAttribute('class', 'col col-md-12');
+		questBox.setAttribute('id', 'questBox');
+		// var questHead = document.createElement('button');
+		// establish value [should pull or match to API]
+		var questValue = Math.imul(categoryQuestions[i], 100);
+		// questHead.innerHTML = '$' + questValue;
+		// questHead.setAttribute('type', 'button');
+		// questHead.setAttribute('class', 'btn');
+		// questHead.setAttribute('data-bs-toggle', 'modal');
+		var categoryFinder =
+			container.children[0].children[0].children[0].textContent;
+		var questId = `${categoryFinder}_${categoryQuestions[i]}`;
+		questId = questId.replace(/\s+/g, '');
+		// questHead.setAttribute('data-bs-target', `#${questId}`);
+		questBox.setAttribute('data-bs-toggle', 'modal');
+		questBox.setAttribute('data-bs-target', `#${questId}`);
+		// questBox.append(questHead);
+		questBox.innerHTML = `$${questValue}`;
+		catAContainer.append(questBox);
+		// console.log(questBox);
+		createModal(catAContainer, questId);
+		container.append(catAContainer);
+	}
+}
+
+//function to create the modal (popup) inside each questionBox
+function createModal(container, id) {
+	var modalFade = document.createElement('div');
+	modalFade.setAttribute('class', 'modal fade');
+	modalFade.setAttribute('id', id);
+	modalFade.setAttribute('tabindex', '-1');
+	modalFade.setAttribute('aria-labelledby', id);
+	modalFade.setAttribute('aria-hidden', 'true');
+	modalFade.setAttribute('data-bs-keyboard', 'false');
+	modalFade.setAttribute('data-bs-backdrop', 'static');
+
+	var modalDialog = document.createElement('div');
+	modalDialog.setAttribute('class', 'modal-dialog modal-dialog-centered');
+
+	var modalContent = document.createElement('div');
+	modalContent.setAttribute('class', 'modal-content');
+
+	//title for the question, currently in as 'Answer' since jeopardy
+	var modalHeader = document.createElement('div');
+	modalHeader.setAttribute('class', 'modal-header');
+	modalHeader.innerHTML = 'Answer:';
+
+	// store the question here
+	var modalQuestion = document.createElement('h5');
+	modalQuestion.setAttribute('class', 'modal-title');
+	modalQuestion.setAttribute('id', id);
+	modalQuestion.innerHTML = id;
+
+	// store timer
+	var modalTimer = document.createElement('h5');
+	modalTimer.setAttribute('class', 'modal-timer');
+	modalTimer.setAttribute('id', 'modaltimer');
+	// set interval timer here
+	modalTimer.innerHTML = 10;
+
+	var modalBody = document.createElement('div');
+	modalBody.setAttribute('class', 'modal-body');
+
+	var modalForm = document.createElement('form');
+	var modalFgroup = document.createElement('div');
+	modalFgroup.setAttribute('class', 'form-group');
+
+	var modalInput = document.createElement('input');
+	modalInput.setAttribute('type', 'answer');
+	modalInput.setAttribute('class', 'form-control');
+	modalInput.setAttribute('id', `floatingInput_${id}`);
+	modalInput.setAttribute('placeholder', 'Answer Here');
+
+	var modalLabel = document.createElement('label');
+	modalLabel.setAttribute('for', `floatingInput_${id}`);
+
+	var modalFooter = document.createElement('div');
+	modalFooter.setAttribute('class', 'modal-footer');
+
+	var modalSubmit = document.createElement('button');
+	modalSubmit.setAttribute('type', 'button');
+	modalSubmit.setAttribute('id', 'submit');
+	modalSubmit.setAttribute('class', 'btn');
+	modalSubmit.setAttribute('data-bs-dismiss', 'modal');
+	modalSubmit.innerHTML = 'Submit';
+
+	modalFooter.append(modalSubmit);
+	modalFgroup.append(modalInput);
+	modalFgroup.append(modalLabel);
+	modalForm.append(modalFgroup);
+	modalBody.append(modalForm);
+	modalHeader.append(modalQuestion);
+	modalHeader.append(modalTimer);
+	modalContent.append(modalHeader, modalBody, modalFooter);
+	modalDialog.append(modalContent);
+	modalFade.append(modalDialog);
+	container.append(modalFade);
+}
+
+//function to handle the submit event (pressing 'enter' after input)
+function handleFormSubmit(event) {
+	event.preventDefault();
+	// Traverse DOM to click the button [Hitting Enter does same thing as clicking button]
+	event.target.parentNode.parentNode.childNodes[2].childNodes[0].click();
+}
+
+//function to handle the clicking of the 'Submit' button inside the modal -- directs to the handleFormSubmit
+function handleButtonClick(event) {
+	event.preventDefault();
+	if (event.target.id === 'submit') {
+		var answerValue =
+			event.target.parentNode.parentNode.childNodes[1].childNodes[0].childNodes[0]
+				.childNodes[0].value;
+		//currently just console logging answer until we can do something
+		console.log(answerValue);
+	}
+}
+
+checkLocalStorage();
+//generate board
+// createCategories();
+
+//event Listeners
+answerSubmit.addEventListener('submit', handleFormSubmit);
+answerSubmit.addEventListener('click', handleButtonClick);
