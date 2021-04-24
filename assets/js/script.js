@@ -1,148 +1,6 @@
 // delegation event listener for board
 var answerSubmit = document.getElementById('boardContainer');
 
-// This is the first draft of the persistant session object. I organized it for ease of use in iteration, but when we get there we may need to make adjustments.
-let sessionQuestions = {
-	category1: {
-		valule: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		question: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		answer: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-	},
-	category2: {
-		valule: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		question: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		answer: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-	},
-	category3: {
-		valule: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		question: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		answer: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-	},
-	category4: {
-		valule: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		question: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		answer: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-	},
-	category5: {
-		valule: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		question: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		answer: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-	},
-	category6: {
-		valule: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		question: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-		answer: {
-			1: '',
-			2: '',
-			3: '',
-			4: '',
-			5: '',
-		},
-	},
-};
-
 //Function that gives user the option to reload their last session. The internal code at this point is arbitrary, but I wanted something there for testing the functionality.
 function continueLastGame() {
 	$('#boardContainer').append('<div id="continue"></div>');
@@ -175,6 +33,7 @@ function loadQuestionSpace(choice) {
 		sessionQuestions = JSON.parse(localStorage.getItem('currentSession'));
 	}
 }
+
 //This function checks local storage for a saved game and returns the option to continue if it exists, or a new game if it doesn't.
 function checkLocalStorage() {
 	if (localStorage.getItem('currentSession')) {
@@ -187,88 +46,63 @@ function checkLocalStorage() {
 // This function saves the function's question object to local storage.
 function saveSession(number, object) {
 	localStorage.setItem('category-' + number, JSON.stringify(object));
-function saveSession(object) {
-	localStorage.setItem('currentSession', JSON.stringify(object));
+
 }
 
-//#####################################TESTING ITERATED FETCH CALLS################################
-//testing for the population of the session questions.
-
-function callNewQuestions() {
-	// Empty array for storing the randomly generated categories.
-	let categoryArray = [];
-	// Iterating through the possible categories to randomly assign 6. No dublicate testing yet, but we need it.
-	for (let i = 0; i < 6; i++) {
-		categoryArray.push(Math.floor(Math.random() * categories.length));
-	}
-	// Looping fetch call from a number facts API (for testing purposes only) based on the categories that were randomly selected.
-	for (let i = 0; i < categoryArray.length; i++) {
-		let keyArray = ['fact1', 'fact2', 'fact3', 'fact4', 'fact5', 'fact6'];
-		fetch(`http://numbersapi.com/${categoryArray[i]}/math?json`)
-			.then((response) => response.json())
-			.then(function (data) {
-				// Populating the object from which the questions will be rendered. There needs to be a step in between here where we look at questions and values in order to select a whole category. My suspicion is that we'll need to build an array within the scope of this function to contain the data in order to work with it.
-				mathFacts[keyArray[i]].number = data.number;
-				mathFacts[keyArray[i]].text = data.text;
-			})
-			.then(function (data) {
-				// This calls the function that puts our finished category set into local storage.
-				saveSession(mathFacts);
-			});
-	}
+function saveSession(object) {
+	localStorage.setItem('currentSession', JSON.stringify(object));
 }
 
 //************************************************************ Functions to get JService DATA ********* */
 
 var object = {};
 
-async function getCategories() {
+async function playGame() {
 	var randomNumber = Math.floor(Math.random() * 10000);
-	fetch('https://jservice.io/api/categories?count=6&offset=' + randomNumber)
-		.then(function (response) {
-			return response.json();
-		})
-		.then(function (data) {
-			var allQuestions = {};
-			if (data) {
-				console.log(data);
-				for (let i = 0; i < data.length; i++) {
-					getQuestions(data[i].id).then(function (questionResponse) {
-						allQuestions[data[i].title] = questionResponse;
-						var questionBank = {
-							[data[i].title]: questionResponse,
-						};
-						saveSession(i, questionBank);
-					});
-				}
-			}
-			console.log('FINAL QUESTION BANK :>> ', allQuestions);
-		});
-}
-
-function getQuestions(category) {
-	return fetch('https://jservice.io/api/clues?category=' + category).then(
-		function (response) {
-			return response.json();
-		}
+	var response = await fetch(
+		'https://jservice.io/api/categories?count=6&offset=' + randomNumber
 	);
+	var data = await response.json();
+	var questionsPull = data;
+	var questionsObject = await organizeData(questionsPull);
+	console.log('questionsObject :>> ', questionsObject);
+	createCategories(Object.getOwnPropertyNames(questionsObject));
 }
 
-function startGame() {
-	getCategories();
+async function organizeData(data) {
+	var allQuestions = {};
+	if (data) {
+		console.log(data);
+		for (let i = 0; i < data.length; i++) {
+			var questionResponse = await getQuestions(data[i].id);
+
+			allQuestions[data[i].title] = questionResponse;
+			var questionBank = {
+				[data[i].title]: questionResponse,
+			};
+			saveSession(i, questionBank);
+		}
+	}
+	console.log('FINAL QUESTION BANK: >> ', allQuestions);
+	return allQuestions;
 }
 
-startGame();
-console.log('object :>> ', object);
+async function getQuestions(category) {
+	var response = await fetch(
+		'http://jservice.io/api/clues?category=' + category
+	);
+	var data = await response.json();
+	return data;
+}
 
 //function to create/populate the board
-function createCategories() {
+function createCategories(categoryArray) {
 	var boardContainer = document.getElementById('boardContainer');
     let bContainerJq = $('#boardContainer');
     bContainerJq.empty();
 	//storing all needed categories here??
-	var categoryName = [1, 2, 3, 4, 5, 6];
-	for (var i = 0; i < categoryName.length; i++) {
+	// var categoryArray = [1, 2, 3, 4, 5, 6];
+	for (var i = 0; i < categoryArray.length; i++) {
 		var catContainer = document.createElement('div');
 		catContainer.setAttribute('class', 'col-12 col-md-2');
 		catContainer.setAttribute('id', 'catContainer');
@@ -279,7 +113,7 @@ function createCategories() {
 		var catHead = document.createElement('h4');
 		catHeadcontainer.setAttribute('class', 'col-12');
 		//update category name here
-		catHead.innerHTML = `Category ${categoryName[i]}`;
+		catHead.innerHTML = `${categoryArray[i]}`;
 		catHeadcontainer.append(catHead);
 		catBox.append(catHeadcontainer);
 		catContainer.append(catBox);
@@ -397,8 +231,6 @@ function createModal(container, id) {
 }
 
 
-//createCategories();
-
 //function to handle the submit event (pressing 'enter' after input)
 function handleFormSubmit(event) {
 	event.preventDefault();
@@ -418,10 +250,11 @@ function handleButtonClick(event) {
 	}
 }
 
-//callNewQuestions();
+//pulls up last saved game (if detected) -- will run generate board out of that
 checkLocalStorage();
-//generate board
-createCategories();
+// start of game here
+playGame();
+
 
 //event Listeners
 answerSubmit.addEventListener('submit', handleFormSubmit);
