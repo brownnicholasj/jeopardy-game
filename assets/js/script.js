@@ -192,12 +192,9 @@ function checkLocalStorage() {
 // This function saves the function's question object to local storage.
 function saveSession(number, object) {
 	localStorage.setItem('category-' + number, JSON.stringify(object));
-<<<<<<< Updated upstream
-=======
 }
 function saveSession(object) {
 	localStorage.setItem('currentSession', JSON.stringify(object));
->>>>>>> Stashed changes
 }
 
 //#####################################TESTING ITERATED FETCH CALLS################################
@@ -240,30 +237,26 @@ async function playGame() {
 	);
 	var data = await response.json();
 	var questionsPull = data;
-	var questionsObject = organizeData(questionsPull);
+	var questionsObject = await organizeData(questionsPull);
 	console.log('questionsObject :>> ', questionsObject);
-	console.log(Object.getOwnPropertyNames(questionsObject));
-	console.log(Object.keys(questionsObject));
-	console.log(JSON.parse(JSON.stringify(questionsObject)));
+	createCategories(Object.getOwnPropertyNames(questionsObject));
 }
 
-function organizeData(data) {
+async function organizeData(data) {
 	var allQuestions = {};
 	if (data) {
 		console.log(data);
 		for (let i = 0; i < data.length; i++) {
-			getQuestions(data[i].id).then(function (questionResponse) {
-				allQuestions[data[i].title] = questionResponse;
-				var questionBank = {
-					[data[i].title]: questionResponse,
-				};
-				saveSession(i, questionBank);
-			});
+			var questionResponse = await getQuestions(data[i].id);
+
+			allQuestions[data[i].title] = questionResponse;
+			var questionBank = {
+				[data[i].title]: questionResponse,
+			};
+			saveSession(i, questionBank);
 		}
 	}
 	console.log('FINAL QUESTION BANK: >> ', allQuestions);
-	console.log(Object.keys(allQuestions));
-	console.log(Object.getOwnPropertyNames(allQuestions));
 	return allQuestions;
 }
 
@@ -274,11 +267,7 @@ async function getQuestions(category) {
 	var data = await response.json();
 	return data;
 }
-function testObjectLoop(object) {
-	for (let item in object) {
-		console.log(object[item]);
-	}
-}
+
 playGame();
 
 //function to create/populate the board
@@ -297,7 +286,7 @@ function createCategories(categoryArray) {
 		var catHead = document.createElement('h4');
 		catHeadcontainer.setAttribute('class', 'col-12');
 		//update category name here
-		catHead.innerHTML = `Category ${categoryArray[i]}`;
+		catHead.innerHTML = `${categoryArray[i]}`;
 		catHeadcontainer.append(catHead);
 		catBox.append(catHeadcontainer);
 		catContainer.append(catBox);
@@ -438,5 +427,5 @@ checkLocalStorage();
 // createCategories();
 
 //event Listeners
-answerSubmit.addEventListener('submit', handleFormSubmit);
-answerSubmit.addEventListener('click', handleButtonClick);
+// answerSubmit.addEventListener('submit', handleFormSubmit);
+// answerSubmit.addEventListener('click', handleButtonClick);
