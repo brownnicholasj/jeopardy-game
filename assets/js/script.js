@@ -16,7 +16,7 @@ function continueLastGame() {
 	});
 	playNew.on('click', function (event) {
 		event.preventDefault();
-		createCategories();
+		playGame();
 	});
 }
 
@@ -66,7 +66,8 @@ async function playGame() {
 	var questionsPull = data;
 	var questionsObject = await organizeData(questionsPull);
 	console.log('questionsObject :>> ', questionsObject);
-	createCategories(Object.getOwnPropertyNames(questionsObject));
+	// createCategories(Object.getOwnPropertyNames(questionsObject));
+	createCategories(questionsObject);
 }
 
 async function organizeData(data) {
@@ -95,17 +96,15 @@ async function getQuestions(category) {
 	return data;
 }
 
-
 //function to create/populate the board
 function createCategories(categoryArray) {
 	var boardContainer = document.getElementById('boardContainer');
 
-    let bContainerJq = $('#boardContainer');
-    bContainerJq.empty();
+	let bContainerJq = $('#boardContainer');
+	bContainerJq.empty();
 
-	//storing all needed categories here??
-	// var categoryArray = [1, 2, 3, 4, 5, 6];
-	for (var i = 0; i < categoryArray.length; i++) {
+	for (var i = 0; i < Object.keys(categoryArray).length; i++) {
+		var catCount = i + 1;
 		var catContainer = document.createElement('div');
 		catContainer.setAttribute('class', 'col-12 col-md-2');
 		catContainer.setAttribute('id', 'catContainer');
@@ -116,23 +115,56 @@ function createCategories(categoryArray) {
 		var catHead = document.createElement('h4');
 		catHeadcontainer.setAttribute('class', 'col-12');
 		//update category name here
-		catHead.innerHTML = `${categoryArray[i]}`;
+		catHead.innerHTML = `${Object.keys(categoryArray)[i]}`;
 		catHeadcontainer.append(catHead);
 		catBox.append(catHeadcontainer);
 		catContainer.append(catBox);
-		createQuestions(catContainer);
+
+		var box1Values = getBoxValues(Object.values(categoryArray)[i], 1);
+		var box2Values = getBoxValues(Object.values(categoryArray)[i], 2);
+		var box3Values = getBoxValues(Object.values(categoryArray)[i], 3);
+		var box4Values = getBoxValues(Object.values(categoryArray)[i], 4);
+		var box5Values = getBoxValues(Object.values(categoryArray)[i], 5);
+		// console.log(box1Values);
+		// console.log(box2Values);
+		// console.log(box3Values);
+		// console.log(box4Values);
+		// console.log(box5Values);
+
+		createQuestions(
+			catContainer,
+			catCount,
+			box1Values,
+			box2Values,
+			box3Values,
+			box4Values,
+			box5Values,
+			categoryArray
+		);
 		boardContainer.append(catContainer);
 	}
 }
 
 //function to create/populate questions section
-function createQuestions(container, round) {
+function createQuestions(
+	container,
+	catCount,
+	box1Values,
+	box2Values,
+	box3Values,
+	box4Values,
+	box5Values,
+	categoryArray,
+	round
+) {
 	var catAContainer = document.createElement('div');
 	catAContainer.setAttribute('class', 'row');
 	catAContainer.setAttribute('id', 'catAContainer');
 	//storing/pulling questions for related category here
+
 	var categoryQuestions = [1, 2, 3, 4, 5];
 	for (var i = 0; i < categoryQuestions.length; i++) {
+		var boxCount = i + 1;
 		var questBox = document.createElement('a');
 		questBox.setAttribute('class', 'col col-md-12');
 		questBox.setAttribute('id', 'questBox');
@@ -143,10 +175,9 @@ function createQuestions(container, round) {
 		// questHead.setAttribute('type', 'button');
 		// questHead.setAttribute('class', 'btn');
 		// questHead.setAttribute('data-bs-toggle', 'modal');
-		var categoryFinder =
-			container.children[0].children[0].children[0].textContent;
-		var questId = `${categoryFinder}_${categoryQuestions[i]}`;
-		questId = questId.replace(/\s+/g, '');
+		// var categoryFinder =
+		// 	container.children[0].children[0].children[0].textContent;
+		var questId = `cat${catCount}b${boxCount}`;
 		// questHead.setAttribute('data-bs-target', `#${questId}`);
 		questBox.setAttribute('data-bs-toggle', 'modal');
 		questBox.setAttribute('data-bs-target', `#${questId}`);
@@ -154,13 +185,42 @@ function createQuestions(container, round) {
 		questBox.innerHTML = `$${questValue}`;
 		catAContainer.append(questBox);
 		// console.log(questBox);
-		createModal(catAContainer, questId);
+
+		var amount = getQvalues(
+			boxCount,
+			'a',
+			box1Values,
+			box2Values,
+			box3Values,
+			box4Values,
+			box5Values
+		);
+		var question = getQvalues(
+			boxCount,
+			'q',
+			box1Values,
+			box2Values,
+			box3Values,
+			box4Values,
+			box5Values
+		);
+		var answer = getQvalues(
+			boxCount,
+			'an',
+			box1Values,
+			box2Values,
+			box3Values,
+			box4Values,
+			box5Values
+		);
+
+		createModal(catAContainer, questId, amount, question, answer);
 		container.append(catAContainer);
 	}
 }
 
 //function to create the modal (popup) inside each questionBox
-function createModal(container, id) {
+function createModal(container, id, amount, question, answer) {
 	var modalFade = document.createElement('div');
 	modalFade.setAttribute('class', 'modal fade');
 	modalFade.setAttribute('id', id);
@@ -185,7 +245,9 @@ function createModal(container, id) {
 	var modalQuestion = document.createElement('h5');
 	modalQuestion.setAttribute('class', 'modal-title');
 	modalQuestion.setAttribute('id', id);
-	modalQuestion.innerHTML = id;
+	modalQuestion.setAttribute('data-answer', answer);
+	modalQuestion.setAttribute('data-value', amount);
+	modalQuestion.innerHTML = question;
 
 	// store timer
 	var modalTimer = document.createElement('h5');
@@ -232,7 +294,6 @@ function createModal(container, id) {
 	modalFade.append(modalDialog);
 	container.append(modalFade);
 }
-
 
 //function to handle the submit event (pressing 'enter' after input)
 function handleFormSubmit(event) {
@@ -282,39 +343,130 @@ checkLocalStorage();
 playGame();
 
 function formQuestion(speechPart) {
-    switch(speechPart.toLowerCase()) {
-        case 'geographical name':
-            return 'Where is ';
-        case 'biographical name':
-            return 'Who is ';
-        default:
-            return 'What is ';
-    }
+	switch (speechPart.toLowerCase()) {
+		case 'geographical name':
+			return 'Where is ';
+		case 'biographical name':
+			return 'Who is ';
+		default:
+			return 'What is ';
+	}
 }
 
 function defineWord(word) {
-    let output;
-    const regex = /[%!@#$%^&*()_\-+=/]/gm;
-    if (regex.test(word)) {
-        output = 'What is ';
+	let output;
+	const regex = /[%!@#$%^&*()_\-+=/]/gm;
+	if (regex.test(word)) {
+		output = 'What is ';
 		//MAP OUTPUT TO THE QUESTIONS DATA OBJECT.
 	} else {
-        let searchUrl = 'https://dictionaryapi.com/api/v3/references/collegiate/json/' + word + '?key=0442cdad-ae0d-4b9d-a484-5df8d0b9fc7d';
-        fetch(searchUrl)
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(data) {
-                console.log("Question Data: ",data);
-                if (data && data[0] && data[0].fl) {
-                    output = formQuestion(data[0].fl);
-                } else {
-                    output = 'What is ';
-                }
-			//MAP OUTPUT TO THE QUESTIONS DATA OBJECT. Test
-	})
-    }
+		let searchUrl =
+			'https://dictionaryapi.com/api/v3/references/collegiate/json/' +
+			word +
+			'?key=0442cdad-ae0d-4b9d-a484-5df8d0b9fc7d';
+		fetch(searchUrl)
+			.then(function (response) {
+				return response.json();
+			})
+			.then(function (data) {
+				console.log('Question Data: ', data);
+				if (data && data[0] && data[0].fl) {
+					output = formQuestion(data[0].fl);
+				} else {
+					output = 'What is ';
+				}
+				//MAP OUTPUT TO THE QUESTIONS DATA OBJECT. Test
+			});
+	}
 }
+
+function getBoxValues(category, num) {
+	var box = {};
+	for (let value of Object.values(category)) {
+		if (typeof box === 'object' && box !== null) {
+			// console.log('box 1 statement 1 true');
+			if (value.value == 100 * num) {
+				// console.log('100 value here');
+				box.value = value.value;
+				box.question = value.question;
+				box.answer = value.answer;
+			} else if (value.value == 200 * num) {
+				// console.log('200 value here');
+				box.value = value.value;
+				box.question = value.question;
+				box.answer = value.answer;
+			}
+		}
+	}
+	return box;
+}
+
+function getQvalues(
+	boxCount,
+	ind,
+	box1Values,
+	box2Values,
+	box3Values,
+	box4Values,
+	box5Values
+) {
+	if (boxCount === 1) {
+		if (ind === 'a') {
+			return box1Values.value;
+		}
+		if (ind === 'q') {
+			return box1Values.question;
+		}
+		if (ind === 'an') {
+			return box1Values.answer;
+		}
+	}
+	if (boxCount === 2) {
+		if (ind === 'a') {
+			return box2Values.value;
+		}
+		if (ind === 'q') {
+			return box2Values.question;
+		}
+		if (ind === 'an') {
+			return box2Values.answer;
+		}
+	}
+	if (boxCount === 3) {
+		if (ind === 'a') {
+			return box3Values.value;
+		}
+		if (ind === 'q') {
+			return box3Values.question;
+		}
+		if (ind === 'an') {
+			return box3Values.answer;
+		}
+	}
+	if (boxCount === 4) {
+		if (ind === 'a') {
+			return box4Values.value;
+		}
+		if (ind === 'q') {
+			return box4Values.question;
+		}
+		if (ind === 'an') {
+			return box4Values.answer;
+		}
+	}
+	if (boxCount === 5) {
+		if (ind === 'a') {
+			return box5Values.value;
+		}
+		if (ind === 'q') {
+			return box5Values.question;
+		}
+		if (ind === 'an') {
+			return box5Values.answer;
+		}
+	}
+}
+
 //event Listeners
 answerSubmit.addEventListener('submit', handleFormSubmit);
 answerSubmit.addEventListener('click', handleButtonClick);
