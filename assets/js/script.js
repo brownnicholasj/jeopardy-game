@@ -6,8 +6,8 @@ function continueLastGame() {
 	$('#boardContainer').append('<div id="continue"></div>');
 	let continueDiv = $('#continue');
 	continueDiv.append('<p>Saved game detected. Continue?</p>');
-	continueDiv.append('<button id="confirmSave">Yes</button>');
-	continueDiv.append('<button id="confirmNew">No</button>');
+	continueDiv.append('<button class="btn" id="confirmSave">Yes</button>');
+	continueDiv.append('<button class="btn" id="confirmNew">No</button>');
 	let playSave = $('#confirmSave');
 	let playNew = $('#confirmNew');
 	playSave.on('click', function (event) {
@@ -106,7 +106,7 @@ function createCategories(categoryArray) {
 	for (var i = 0; i < Object.keys(categoryArray).length; i++) {
 		var catCount = i + 1;
 		var catContainer = document.createElement('div');
-		catContainer.setAttribute('class', 'col-12 col-md-2');
+		catContainer.setAttribute('class', 'col-12 col-sm-2');
 		catContainer.setAttribute('id', 'catContainer');
 		var catBox = document.createElement('div');
 		catBox.setAttribute('class', 'row');
@@ -275,6 +275,13 @@ function createModal(container, id, amount, question, answer) {
 	var modalFooter = document.createElement('div');
 	modalFooter.setAttribute('class', 'modal-footer');
 
+	var modalPass = document.createElement('button');
+	modalPass.setAttribute('type', 'button');
+	modalPass.setAttribute('id', 'pass');
+	modalPass.setAttribute('class', 'btn');
+	modalPass.setAttribute('data-bs-dismiss', 'modal');
+	modalPass.innerHTML = 'Pass';
+
 	var modalSubmit = document.createElement('button');
 	modalSubmit.setAttribute('type', 'button');
 	modalSubmit.setAttribute('id', 'submit');
@@ -283,6 +290,7 @@ function createModal(container, id, amount, question, answer) {
 	modalSubmit.innerHTML = 'Submit';
 
 	modalFooter.append(modalSubmit);
+	modalFooter.append(modalPass);
 	modalFgroup.append(modalInput);
 	modalFgroup.append(modalLabel);
 	modalForm.append(modalFgroup);

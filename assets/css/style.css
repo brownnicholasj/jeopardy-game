@@ -14,14 +14,19 @@ body {
 		var(--grad-bg-color),
 		var(--main-bg-color)
 	);
-	font-size: 1.5rem;
+	font-size: 1rem;
 	color: white;
+	font-family: 'ZCOOL QingKe HuangYou', cursive;
 }
 
-.display-1 {
-	color: rgb(241, 157, 60);
+#continue .btn {
+	border: 3px solid black;
+	box-shadow: 2px 2px 3px black;
+	padding: 5px;
+	color: white;
 	text-shadow: 2px 2px 3px black;
-	font-size: 1.5rem;
+	font-size: clamp(0.75rem, 0.75rem + 2vw, 3rem);
+	width: 25vw;
 }
 
 #topRow {
@@ -36,9 +41,27 @@ body {
 
 #topBox {
 	border: 2px solid black;
-	text-align: center;
 	padding: 5px;
 	box-shadow: 2px 2px 3px black;
+	min-height: 6vh;
+	width: 8vw;
+}
+
+#topBox > h4 {
+	font-size: clamp(8px, 8vw, 24px);
+	margin: 0;
+}
+
+#topTitle {
+	font-size: clamp(8px, 10vw, 60px);
+	padding: 5px;
+	color: rgb(241, 157, 60);
+	font-weight: 700;
+	text-shadow: 1px 0px 1px black, 0px 1px 1px gray, 2px 1px 1px black,
+		1px 2px 1px gray, 3px 2px 1px black, 2px 3px 1px gray, 4px 3px 1px black,
+		3px 4px 1px gray, 5px 4px 1px black, 4px 5px 1px gray, 6px 5px 1px black,
+		5px 6px 1px gray, 7px 6px 1px black;
+	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
 #boardContainer {
@@ -46,34 +69,50 @@ body {
 	margin-left: auto;
 	margin-right: auto;
 	border: 2px solid black;
+	height: 80vh;
 }
 
 #catContainer {
-	border: 3px solid black;
+	border: 1px solid black;
 	word-wrap: break-word;
+	height: 16.67%;
 }
 
 #catBox {
-	border: 3px solid black;
+	border: 1px solid black;
 	box-shadow: 2px 2px 3px black;
 	padding: 5px;
+	padding-top: 0px;
 	color: white;
 	text-shadow: 2px 2px 3px black;
+	height: 40%;
+	align-content: center;
+}
+
+#catBox h4 {
+	font-size: clamp(14px, 4vw, 20px);
+	margin: 0;
+	position: relative;
+	top: 0;
+	font-family: 'Roboto', sans-serif;
 }
 
 #catAContainer {
 	display: flex;
 	flex-direction: row;
+	height: 60%;
 }
 
 #questBox {
-	border: 3px solid black;
+	border: 1px solid black;
 	box-shadow: 2px 2px 3px black;
 	padding: 5px;
+	padding-top: 1rem;
 	color: rgb(241, 157, 60);
 	font-weight: 700;
-	font-size: 1.75rem;
-	text-shadow: 2px 2px 3px black;
+	font-size: clamp(0.75rem, 0.75rem + 2vw, 3rem);
+	text-shadow: 5px 8px 3px black;
+	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
 /* #questBox button {
@@ -95,23 +134,28 @@ body {
 		var(--grad-bg-color),
 		var(--main-bg-color)
 	);
-	min-height: 50vh;
-	min-width: 50vw;
-	font-size: 1.5em;
+	min-height: 30vh;
+	min-width: 30vw;
+	font-size: clamp(0.75rem, 0.75rem + 2vw, 3rem);
+	font-family: 'Roboto', sans-serif;
 }
 
 .modal-header {
-	align-items: center;
+	align-items: top;
 	border: 3px solid black;
-	min-height: 15rem;
+	height: 30vh;
+	font-size: clamp(8px, 1rem + 1vw, 32px);
+	font-family: 'Roboto', sans-serif;
 }
 
 .modal-header .modal-title {
 	justify-self: flex-start;
+	align-self: center;
 	min-width: 70%;
 	text-align: left;
 	margin-left: 10px;
-	font-size: 2rem;
+	font-size: clamp(8px, 1rem + 1vw, 32px);
+	font-family: 'Roboto', sans-serif;
 }
 
 /* display set to none until ready to show */
@@ -124,15 +168,26 @@ body {
 
 .modal-body {
 	border: 3px solid black;
+	height: 100%;
+}
+
+form {
+	height: 30vh;
+}
+
+.form-group {
+	margin: 0;
+	height: 100%;
 }
 
 .form-control {
 	background-color: var(--main-bg-color);
 	box-shadow: 2px 2px 10px black;
-	min-height: 15rem;
+	height: 100%;
 	align-self: center;
-	font-size: 2rem;
+	font-size: clamp(8px, 1rem + 1vw, 32px);
 	color: white;
+	font-family: 'Nanum Pen Script', cursive;
 }
 
 .form-control:focus {
@@ -149,7 +204,7 @@ body {
 
 .modal-footer {
 	justify-content: center;
-	min-height: 5rem;
+	height: 100%;
 	border: 3px solid black;
 }
 
@@ -159,7 +214,8 @@ body {
 	padding: 5px;
 	color: white;
 	text-shadow: 2px 2px 3px black;
-	font-size: 2rem;
+	font-size: clamp(0.75rem, 0.75rem + 2vw, 3rem);
+	width: 25vw;
 }
 
 .modal-footer .btn:hover {
@@ -169,8 +225,28 @@ body {
 }
 
 @media (min-width: 576px) {
-	.modal-dialog {
-		max-width: 768px;
-		margin: 1.75rem auto;
+	#boardContainer {
+		height: 60vh;
+	}
+
+	#catContainer {
+		height: 100%;
+	}
+
+	#catBox {
+		height: 20%;
+	}
+
+	#catBox > div {
+		margin: 0;
+		padding: 0;
+	}
+
+	#catAContainer {
+		height: 80%;
+	}
+
+	#questBox {
+		height: 20%;
 	}
 }
