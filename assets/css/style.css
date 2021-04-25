@@ -115,12 +115,9 @@ body {
 	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
-/* #questBox button {
+a:not([href]):not([tabinex]) {
 	color: rgb(241, 157, 60);
-	font-weight: 700;
-	font-size: 1rem;
-	text-shadow: 2px 2px 3px black;
-} */
+}
 
 #questBox:hover {
 	border: 3px solid white;

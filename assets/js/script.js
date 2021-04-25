@@ -165,9 +165,11 @@ function createQuestions(
 	var categoryQuestions = [1, 2, 3, 4, 5];
 	for (var i = 0; i < categoryQuestions.length; i++) {
 		var boxCount = i + 1;
+		var questId = `cat${catCount}b${boxCount}`;
 		var questBox = document.createElement('a');
 		questBox.setAttribute('class', 'col col-md-12');
 		questBox.setAttribute('id', 'questBox');
+		questBox.setAttribute('name', questId);
 		// var questHead = document.createElement('button');
 		// establish value [should pull or match to API]
 		var questValue = Math.imul(categoryQuestions[i], 100);
@@ -177,7 +179,6 @@ function createQuestions(
 		// questHead.setAttribute('data-bs-toggle', 'modal');
 		// var categoryFinder =
 		// 	container.children[0].children[0].children[0].textContent;
-		var questId = `cat${catCount}b${boxCount}`;
 		// questHead.setAttribute('data-bs-target', `#${questId}`);
 		questBox.setAttribute('data-bs-toggle', 'modal');
 		questBox.setAttribute('data-bs-target', `#${questId}`);
@@ -319,7 +320,20 @@ function handleButtonClick(event) {
 				.childNodes[0].childNodes[0].value;
 		//currently just console logging answer until we can do something
 		// console.log(answerValue);
+		removeCatSquare(event.target);
 	}
+	if (event.target.id === 'pass') {
+		removeCatSquare(event.target);
+	}
+}
+
+function removeCatSquare(event) {
+	var logId = event.parentNode.parentNode.parentNode.parentNode.id;
+	var findBox = document.getElementsByName(logId);
+	findBox[0].innerHTML = '';
+	findBox[0].removeAttribute('data-bs-toggle');
+	var findModal = document.getElementById(logId);
+	findModal.remove();
 }
 
 //function to sum score from each question after answered
