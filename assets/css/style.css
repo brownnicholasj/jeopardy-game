@@ -45,6 +45,8 @@ body {
 	box-shadow: 2px 2px 3px black;
 	min-height: 6vh;
 	width: 8vw;
+	display: inline-flex;
+	justify-content: center;
 }
 
 #topBox > h4 {
@@ -107,7 +109,6 @@ body {
 	border: 1px solid black;
 	box-shadow: 2px 2px 3px black;
 	padding: 5px;
-	padding-top: 1rem;
 	color: rgb(241, 157, 60);
 	font-weight: 700;
 	font-size: clamp(0.75rem, 0.75rem + 2vw, 3rem);

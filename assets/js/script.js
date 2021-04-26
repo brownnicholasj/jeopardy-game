@@ -25,12 +25,14 @@ function loadQuestionSpace(choice) {
 	if (choice == 'confirmNew') {
 		$('#testdiv').empty();
 		$('#testdiv').append('<h1>NEW GAME</h1>');
-		callNewQuestions();
+		// callNewQuestions();
 	}
 	if (choice == 'confirmSave') {
 		$('#testdiv').empty();
 		$('#testdiv').append('<h1>SAVED GAME</h1>');
 		sessionQuestions = JSON.parse(localStorage.getItem('currentSession'));
+		//pull saved score too?
+		//sessionScore = JSON.parse(localStorage.getItem('currentScore'));
 	}
 }
 
@@ -39,7 +41,7 @@ function checkLocalStorage() {
 	if (localStorage.getItem('currentSession')) {
 		continueLastGame();
 	} else {
-		callNewQuestions(); //This will be the function that makes the API call. It will contain functions for setting the local object (which will save to local storage).
+		// callNewQuestions(); //This will be the function that makes the API call. It will contain functions for setting the local object (which will save to local storage).
 		saveSession();
 	}
 }
@@ -352,6 +354,7 @@ function scoreTally(answer, value) {
 		var scoreAdd = value * 1;
 		totalScore.textContent = currentScore + scoreAdd;
 	}
+	saveScore();
 }
 
 // simulation for score updating
@@ -359,7 +362,14 @@ function scoreTally(answer, value) {
 // scoreTally(true, 200);
 // scoreTally(true, 300);
 // scoreTally(true, 400);
-// scoreTally(false, 500);
+// // scoreTally(false, 500);
+
+function saveScore() {
+	console.log('save score start');
+	var totalScore = document.getElementById('scoreBox');
+	var currentScore = Number(totalScore.textContent);
+	localStorage.setItem('currentScore', JSON.stringify(currentScore));
+}
 
 //callNewQuestions();
 checkLocalStorage();
