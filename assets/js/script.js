@@ -266,15 +266,19 @@ function createModal(container, id, amount, question, answer) {
 	var modalFgroup = document.createElement('div');
 	modalFgroup.setAttribute('class', 'form-group');
 
+	var modalPhrase = document.createElement('h5');
+	modalPhrase.setAttribute('id', `phrase_${id}`);
+	defineWord(modalQuestion.getAttribute('data-answer'), `phrase_${id}`);
+
 	var modalInput = document.createElement('input');
 	modalInput.setAttribute('type', 'answer');
 	modalInput.setAttribute('class', 'form-control');
 	modalInput.setAttribute('id', `floatingInput_${id}`);
-	defineWord(modalQuestion.getAttribute('data-answer'), `floatingInput_${id}`);
+	// defineWord(modalQuestion.getAttribute('data-answer'), `floatingInput_${id}`);
 
-	if (modalInput.hasAttributes(`placeholder`)) {
-		modalInput.setAttribute('placeholder', 'What is...');
-	}
+	// if (modalInput.hasAttributes(`placeholder`)) {
+	// 	modalInput.setAttribute('placeholder', 'What is...');
+	// }
 
 	var modalLabel = document.createElement('label');
 	modalLabel.setAttribute('for', `floatingInput_${id}`);
@@ -298,6 +302,7 @@ function createModal(container, id, amount, question, answer) {
 
 	modalFooter.append(modalSubmit);
 	modalFooter.append(modalPass);
+	modalFgroup.append(modalPhrase);
 	modalFgroup.append(modalInput);
 	modalFgroup.append(modalLabel);
 	modalForm.append(modalFgroup);
@@ -416,7 +421,8 @@ function defineWord(word, id) {
 				if (findObject === null) {
 					return;
 				} else {
-					findObject.setAttribute('placeholder', `${output}...`);
+					// findObject.setAttribute('placeholder', `${output}...`);
+					findObject.innerText = `${output}...`;
 				}
 			});
 	}
