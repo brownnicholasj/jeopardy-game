@@ -177,6 +177,12 @@ function createCategories(categoryArray) {
 		);
 		boardContainer.append(catContainer);
 	}
+	$('button').on('click', function(event){
+		console.log(event.target.id);
+		let answerSelector = $(this).attr('data-id');
+		let userSubmission = $(`#floatingInput_${answerSelector}`).val();
+		checkAnswer(userSubmission)
+	})
 }
 
 //function to create/populate questions section
@@ -251,7 +257,13 @@ function createQuestions(
 		createModal(catAContainer, questId, amount, question, answer);
 		container.append(catAContainer);
 	}
+
 }
+
+function checkAnswer(userSubmission) {
+	console.log(userSubmission)
+}
+
 
 //function to create the modal (popup) inside each questionBox
 function createModal(container, id, amount, question, answer) {
@@ -301,6 +313,7 @@ function createModal(container, id, amount, question, answer) {
 	modalInput.setAttribute('type', 'answer');
 	modalInput.setAttribute('class', 'form-control');
 	modalInput.setAttribute('id', `floatingInput_${id}`);
+	modalInput.setAttribute('data-id', id);
 	modalInput.setAttribute('placeholder', 'Answer Here');
 
 	var modalLabel = document.createElement('label');
@@ -311,7 +324,8 @@ function createModal(container, id, amount, question, answer) {
 
 	var modalSubmit = document.createElement('button');
 	modalSubmit.setAttribute('type', 'button');
-	modalSubmit.setAttribute('id', 'submit');
+	modalSubmit.setAttribute('id', `submit_${id}`);
+	modalSubmit.setAttribute('data-id', id);
 	modalSubmit.setAttribute('class', 'btn');
 	modalSubmit.setAttribute('data-bs-dismiss', 'modal');
 	modalSubmit.innerHTML = 'Submit';
@@ -328,8 +342,7 @@ function createModal(container, id, amount, question, answer) {
 	modalFade.append(modalDialog);
 	container.append(modalFade);
 	
-	handleFormSubmit(event);
-	//$('button').on('click', function(){console.log("test");})
+	
 }
 
 //function to handle the submit event (pressing 'enter' after input)
