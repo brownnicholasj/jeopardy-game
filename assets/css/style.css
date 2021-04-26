@@ -74,6 +74,21 @@ body {
 	height: 80vh;
 }
 
+#continue {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#continue button{
+	border-radius: 4px;
+	margin: 10px;
+	padding: 5px;
+	width: 12%;
+	color: white;
+	background-color: var(--grad-bg-color);
+}
+
 #catContainer {
 	border: 1px solid black;
 	word-wrap: break-word;
@@ -251,5 +266,13 @@ form {
 
 	#questBox {
 		height: 20%;
+	}
+	#continue button {
+		width: 40%;
+	}
+}
+@media (max-width: 576px) {
+	#continue button {
+		width: 40%;
 	}
 }

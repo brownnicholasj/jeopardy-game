@@ -5,14 +5,15 @@ var answerSubmit = document.getElementById('boardContainer');
 function continueLastGame() {
 	$('#boardContainer').append('<div id="continue"></div>');
 	let continueDiv = $('#continue');
-	continueDiv.append('<p>Saved game detected. Continue?</p>');
-	continueDiv.append('<button class="btn" id="confirmSave">Yes</button>');
-	continueDiv.append('<button class="btn" id="confirmNew">No</button>');
+	continueDiv.append('<p>Saved game detected. Do you want to continue?</p>');
+	continueDiv.append('<button id="confirmSave">Yes</button>');
+	continueDiv.append('<button id="confirmNew">No</button>');
 	let playSave = $('#confirmSave');
 	let playNew = $('#confirmNew');
 	playSave.on('click', function (event) {
 		event.preventDefault();
-		createCategories();
+		let questionsObject = recoverSession();
+		createCategories(questionsObject);
 	});
 	playNew.on('click', function (event) {
 		event.preventDefault();
@@ -41,19 +42,52 @@ function checkLocalStorage() {
 	if (localStorage.getItem('currentSession')) {
 		continueLastGame();
 	} else {
-		// callNewQuestions(); //This will be the function that makes the API call. It will contain functions for setting the local object (which will save to local storage).
-		saveSession();
+		playGame();
 	}
 }
 
 // This function saves the function's question object to local storage.
-function saveSession(number, object) {
-	localStorage.setItem('category-' + number, JSON.stringify(object));
+function recoverSession() {
+	let questionsObject = JSON.parse(localStorage.getItem('currentSession'));
+	return questionsObject;
 }
-
+// This function can be called to save the current game session.
 function saveSession(object) {
 	localStorage.setItem('currentSession', JSON.stringify(object));
 }
+//GAME CONSTRAINT DEVELOPMENT
+//	This function should more accurately generate a round of jeopardy with increased clue/value integrity.
+function constrainGame(object) {
+	console.log(object);
+	let keys = Object.keys(object);
+	let subKeys = Object.keys(object[keys[0]]);
+	let botKeys = Object.keys(object[keys[subKeys[0]]]);
+	console.log(keys)
+	console.log(subKeys)
+	console.log(botKeys)
+	for (let i = 0; i < keys.length; i++) {
+		for (let j = 0; j < object[keys[i]].length; j++) {
+			delete object[keys[i]][j].id;
+			delete object[keys[i]][j].airdate;
+			delete object[keys[i]][j].category;
+			delete object[keys[i]][j].category_id;
+			delete object[keys[i]][j].created_at;
+			delete object[keys[i]][j].game_id;
+			delete object[keys[i]][j].invalid_count;
+			delete object[keys[i]][j].updated_at;
+			if (object[keys[i]][j].value == 1000 || 800 || 600) {
+				object[keys[i]][j].value = (object[keys[i]][j].value)/2;
+			}
+			if (object[keys[i]][j].value == 1000 || 800 || 600) {
+				object[keys[i]][j].value = (object[keys[i]][j].value)/2;
+			}
+		}		
+	}
+
+	console.log(object)
+}
+
+
 
 //************************************************************ Functions to get JService DATA ********* */
 
@@ -68,6 +102,8 @@ async function playGame() {
 	var questionsPull = data;
 	var questionsObject = await organizeData(questionsPull);
 	console.log('questionsObject :>> ', questionsObject);
+	
+	saveSession(questionsObject);
 	// createCategories(Object.getOwnPropertyNames(questionsObject));
 	createCategories(questionsObject);
 }
@@ -78,12 +114,11 @@ async function organizeData(data) {
 		console.log(data);
 		for (let i = 0; i < data.length; i++) {
 			var questionResponse = await getQuestions(data[i].id);
-
 			allQuestions[data[i].title] = questionResponse;
+
 			var questionBank = {
 				[data[i].title]: questionResponse,
 			};
-			saveSession(i, questionBank);
 		}
 	}
 	console.log('FINAL QUESTION BANK: >> ', allQuestions);
@@ -101,7 +136,6 @@ async function getQuestions(category) {
 //function to create/populate the board
 function createCategories(categoryArray) {
 	var boardContainer = document.getElementById('boardContainer');
-
 	let bContainerJq = $('#boardContainer');
 	bContainerJq.empty();
 
@@ -117,17 +151,17 @@ function createCategories(categoryArray) {
 		var catHead = document.createElement('h4');
 		catHeadcontainer.setAttribute('class', 'col-12');
 		//update category name here
-		catHead.innerHTML = `${Object.keys(categoryArray)[i]}`;
+		catHead.innerHTML = `${Object.keys(categoryArray)[i].toUpperCase()}`;
 		catHeadcontainer.append(catHead);
 		catBox.append(catHeadcontainer);
 		catContainer.append(catBox);
-
+		// console.log(categoryArray)
+		// console.log(Object.values(categoryArray)[i]);
 		var box1Values = getBoxValues(Object.values(categoryArray)[i], 1);
 		var box2Values = getBoxValues(Object.values(categoryArray)[i], 2);
 		var box3Values = getBoxValues(Object.values(categoryArray)[i], 3);
 		var box4Values = getBoxValues(Object.values(categoryArray)[i], 4);
 		var box5Values = getBoxValues(Object.values(categoryArray)[i], 5);
-		// console.log(box1Values);
 		// console.log(box2Values);
 		// console.log(box3Values);
 		// console.log(box4Values);
@@ -313,6 +347,9 @@ function createModal(container, id, amount, question, answer) {
 	modalDialog.append(modalContent);
 	modalFade.append(modalDialog);
 	container.append(modalFade);
+	
+	handleFormSubmit(event);
+	//$('button').on('click', function(){console.log("test");})
 }
 
 //function to handle the submit event (pressing 'enter' after input)
@@ -381,7 +418,7 @@ checkLocalStorage();
 //generate board -- goes through checkLocalStorage();
 // createCategories();
 // start of game here
-playGame();
+// playGame();
 
 function formQuestion(speechPart) {
 	switch (speechPart.toLowerCase()) {
