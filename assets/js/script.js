@@ -26,12 +26,14 @@ function loadQuestionSpace(choice) {
 	if (choice == 'confirmNew') {
 		$('#testdiv').empty();
 		$('#testdiv').append('<h1>NEW GAME</h1>');
-		callNewQuestions();
+		// callNewQuestions();
 	}
 	if (choice == 'confirmSave') {
 		$('#testdiv').empty();
 		$('#testdiv').append('<h1>SAVED GAME</h1>');
 		sessionQuestions = JSON.parse(localStorage.getItem('currentSession'));
+		//pull saved score too?
+		//sessionScore = JSON.parse(localStorage.getItem('currentScore'));
 	}
 }
 
@@ -140,7 +142,7 @@ function createCategories(categoryArray) {
 	for (var i = 0; i < Object.keys(categoryArray).length; i++) {
 		var catCount = i + 1;
 		var catContainer = document.createElement('div');
-		catContainer.setAttribute('class', 'col-12 col-md-2');
+		catContainer.setAttribute('class', 'col-12 col-sm-2');
 		catContainer.setAttribute('id', 'catContainer');
 		var catBox = document.createElement('div');
 		catBox.setAttribute('class', 'row');
@@ -199,9 +201,11 @@ function createQuestions(
 	var categoryQuestions = [1, 2, 3, 4, 5];
 	for (var i = 0; i < categoryQuestions.length; i++) {
 		var boxCount = i + 1;
+		var questId = `cat${catCount}b${boxCount}`;
 		var questBox = document.createElement('a');
 		questBox.setAttribute('class', 'col col-md-12');
 		questBox.setAttribute('id', 'questBox');
+		questBox.setAttribute('name', questId);
 		// var questHead = document.createElement('button');
 		// establish value [should pull or match to API]
 		var questValue = Math.imul(categoryQuestions[i], 100);
@@ -211,7 +215,6 @@ function createQuestions(
 		// questHead.setAttribute('data-bs-toggle', 'modal');
 		// var categoryFinder =
 		// 	container.children[0].children[0].children[0].textContent;
-		var questId = `cat${catCount}b${boxCount}`;
 		// questHead.setAttribute('data-bs-target', `#${questId}`);
 		questBox.setAttribute('data-bs-toggle', 'modal');
 		questBox.setAttribute('data-bs-target', `#${questId}`);
@@ -297,17 +300,32 @@ function createModal(container, id, amount, question, answer) {
 	var modalFgroup = document.createElement('div');
 	modalFgroup.setAttribute('class', 'form-group');
 
+	var modalPhrase = document.createElement('h5');
+	modalPhrase.setAttribute('id', `phrase_${id}`);
+	defineWord(modalQuestion.getAttribute('data-answer'), `phrase_${id}`);
+
 	var modalInput = document.createElement('input');
 	modalInput.setAttribute('type', 'answer');
 	modalInput.setAttribute('class', 'form-control');
 	modalInput.setAttribute('id', `floatingInput_${id}`);
-	modalInput.setAttribute('placeholder', 'Answer Here');
+	// defineWord(modalQuestion.getAttribute('data-answer'), `floatingInput_${id}`);
+
+	// if (modalInput.hasAttributes(`placeholder`)) {
+	// 	modalInput.setAttribute('placeholder', 'What is...');
+	// }
 
 	var modalLabel = document.createElement('label');
 	modalLabel.setAttribute('for', `floatingInput_${id}`);
 
 	var modalFooter = document.createElement('div');
 	modalFooter.setAttribute('class', 'modal-footer');
+
+	var modalPass = document.createElement('button');
+	modalPass.setAttribute('type', 'button');
+	modalPass.setAttribute('id', 'pass');
+	modalPass.setAttribute('class', 'btn');
+	modalPass.setAttribute('data-bs-dismiss', 'modal');
+	modalPass.innerHTML = 'Pass';
 
 	var modalSubmit = document.createElement('button');
 	modalSubmit.setAttribute('type', 'button');
@@ -317,6 +335,8 @@ function createModal(container, id, amount, question, answer) {
 	modalSubmit.innerHTML = 'Submit';
 
 	modalFooter.append(modalSubmit);
+	modalFooter.append(modalPass);
+	modalFgroup.append(modalPhrase);
 	modalFgroup.append(modalInput);
 	modalFgroup.append(modalLabel);
 	modalForm.append(modalFgroup);
@@ -348,7 +368,20 @@ function handleButtonClick(event) {
 				.childNodes[0].childNodes[0].value;
 		//currently just console logging answer until we can do something
 		// console.log(answerValue);
+		removeCatSquare(event.target);
 	}
+	if (event.target.id === 'pass') {
+		removeCatSquare(event.target);
+	}
+}
+
+function removeCatSquare(event) {
+	var logId = event.parentNode.parentNode.parentNode.parentNode.id;
+	var findBox = document.getElementsByName(logId);
+	findBox[0].innerHTML = '';
+	findBox[0].removeAttribute('data-bs-toggle');
+	var findModal = document.getElementById(logId);
+	findModal.remove();
 }
 
 //function to sum score from each question after answered
@@ -363,6 +396,7 @@ function scoreTally(answer, value) {
 		var scoreAdd = value * 1;
 		totalScore.textContent = currentScore + scoreAdd;
 	}
+	saveScore();
 }
 
 // simulation for score updating
@@ -370,7 +404,14 @@ function scoreTally(answer, value) {
 // scoreTally(true, 200);
 // scoreTally(true, 300);
 // scoreTally(true, 400);
-// scoreTally(false, 500);
+// // scoreTally(false, 500);
+
+function saveScore() {
+	console.log('save score start');
+	var totalScore = document.getElementById('scoreBox');
+	var currentScore = Number(totalScore.textContent);
+	localStorage.setItem('currentScore', JSON.stringify(currentScore));
+}
 
 //callNewQuestions();
 checkLocalStorage();
@@ -390,12 +431,12 @@ function formQuestion(speechPart) {
 	}
 }
 
-function defineWord(word) {
+function defineWord(word, id) {
 	let output;
 	const regex = /[%!@#$%^&*()_\-+=/]/gm;
 	if (regex.test(word)) {
 		output = 'What is ';
-		//MAP OUTPUT TO THE QUESTIONS DATA OBJECT.
+		//MAP OUTPUT TO THE QUESTIONS DATA OBJECT
 	} else {
 		let searchUrl =
 			'https://dictionaryapi.com/api/v3/references/collegiate/json/' +
@@ -406,13 +447,20 @@ function defineWord(word) {
 				return response.json();
 			})
 			.then(function (data) {
-				console.log('Question Data: ', data);
 				if (data && data[0] && data[0].fl) {
-					output = formQuestion(data[0].fl);
+					var formRequest = data[0].fl;
+					output = formQuestion(formRequest);
 				} else {
 					output = 'What is ';
 				}
 				//MAP OUTPUT TO THE QUESTIONS DATA OBJECT. Test
+				var findObject = document.getElementById(id);
+				if (findObject === null) {
+					return;
+				} else {
+					// findObject.setAttribute('placeholder', `${output}...`);
+					findObject.innerText = `${output}...`;
+				}
 			});
 	}
 }
