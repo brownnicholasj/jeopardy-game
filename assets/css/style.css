@@ -133,7 +133,7 @@ a:not([href]):not([tabinex]) {
 		var(--main-bg-color)
 	);
 	min-height: 30vh;
-	min-width: 30vw;
+	min-width: 40vw;
 	font-size: clamp(0.75rem, 0.75rem + 2vw, 3rem);
 	font-family: 'Roboto', sans-serif;
 }
