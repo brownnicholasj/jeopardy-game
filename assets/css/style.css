@@ -48,6 +48,21 @@ body {
 	border: 2px solid black;
 }
 
+#continue {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#continue button{
+	border-radius: 4px;
+	margin: 10px;
+	padding: 5px;
+	width: 12%;
+	color: white;
+	background-color: var(--grad-bg-color);
+}
+
 #catContainer {
 	border: 3px solid black;
 	word-wrap: break-word;
@@ -172,5 +187,13 @@ body {
 	.modal-dialog {
 		max-width: 768px;
 		margin: 1.75rem auto;
+	}
+	#continue button {
+		width: 40%;
+	}
+}
+@media (max-width: 576px) {
+	#continue button {
+		width: 40%;
 	}
 }

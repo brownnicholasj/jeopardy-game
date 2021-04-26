@@ -5,14 +5,15 @@ var answerSubmit = document.getElementById('boardContainer');
 function continueLastGame() {
 	$('#boardContainer').append('<div id="continue"></div>');
 	let continueDiv = $('#continue');
-	continueDiv.append('<p>Saved game detected. Continue?</p>');
+	continueDiv.append('<p>Saved game detected. Do you want to continue?</p>');
 	continueDiv.append('<button id="confirmSave">Yes</button>');
 	continueDiv.append('<button id="confirmNew">No</button>');
 	let playSave = $('#confirmSave');
 	let playNew = $('#confirmNew');
 	playSave.on('click', function (event) {
 		event.preventDefault();
-		createCategories();
+		let questionsObject = recoverSession();
+		createCategories(questionsObject);
 	});
 	playNew.on('click', function (event) {
 		event.preventDefault();
@@ -39,14 +40,14 @@ function checkLocalStorage() {
 	if (localStorage.getItem('currentSession')) {
 		continueLastGame();
 	} else {
-		callNewQuestions(); //This will be the function that makes the API call. It will contain functions for setting the local object (which will save to local storage).
-		saveSession();
+		playGame();
 	}
 }
 
 // This function saves the function's question object to local storage.
-function saveSession(number, object) {
-	localStorage.setItem('category-' + number, JSON.stringify(object));
+function recoverSession() {
+	let questionsObject = JSON.parse(localStorage.getItem('currentSession'));
+	return questionsObject;
 }
 
 function saveSession(object) {
@@ -66,6 +67,7 @@ async function playGame() {
 	var questionsPull = data;
 	var questionsObject = await organizeData(questionsPull);
 	console.log('questionsObject :>> ', questionsObject);
+	saveSession(questionsObject);
 	// createCategories(Object.getOwnPropertyNames(questionsObject));
 	createCategories(questionsObject);
 }
@@ -81,10 +83,10 @@ async function organizeData(data) {
 			var questionBank = {
 				[data[i].title]: questionResponse,
 			};
-			saveSession(i, questionBank);
 		}
 	}
 	console.log('FINAL QUESTION BANK: >> ', allQuestions);
+  	saveSession(questionBank);
 	return allQuestions;
 }
 
@@ -340,7 +342,7 @@ checkLocalStorage();
 //generate board -- goes through checkLocalStorage();
 // createCategories();
 // start of game here
-playGame();
+// playGame();
 
 function formQuestion(speechPart) {
 	switch (speechPart.toLowerCase()) {
