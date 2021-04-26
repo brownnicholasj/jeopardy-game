@@ -268,7 +268,11 @@ function createModal(container, id, amount, question, answer) {
 	modalInput.setAttribute('type', 'answer');
 	modalInput.setAttribute('class', 'form-control');
 	modalInput.setAttribute('id', `floatingInput_${id}`);
-	modalInput.setAttribute('placeholder', 'Answer Here');
+	defineWord(modalQuestion.getAttribute('data-answer'), `floatingInput_${id}`);
+
+	if (modalInput.hasAttributes(`placeholder`)) {
+		modalInput.setAttribute('placeholder', 'What is...');
+	}
 
 	var modalLabel = document.createElement('label');
 	modalLabel.setAttribute('for', `floatingInput_${id}`);
@@ -375,12 +379,12 @@ function formQuestion(speechPart) {
 	}
 }
 
-function defineWord(word) {
+function defineWord(word, id) {
 	let output;
 	const regex = /[%!@#$%^&*()_\-+=/]/gm;
 	if (regex.test(word)) {
 		output = 'What is ';
-		//MAP OUTPUT TO THE QUESTIONS DATA OBJECT.
+		//MAP OUTPUT TO THE QUESTIONS DATA OBJECT
 	} else {
 		let searchUrl =
 			'https://dictionaryapi.com/api/v3/references/collegiate/json/' +
@@ -391,13 +395,19 @@ function defineWord(word) {
 				return response.json();
 			})
 			.then(function (data) {
-				console.log('Question Data: ', data);
 				if (data && data[0] && data[0].fl) {
-					output = formQuestion(data[0].fl);
+					var formRequest = data[0].fl;
+					output = formQuestion(formRequest);
 				} else {
 					output = 'What is ';
 				}
 				//MAP OUTPUT TO THE QUESTIONS DATA OBJECT. Test
+				var findObject = document.getElementById(id);
+				if (findObject === null) {
+					return;
+				} else {
+					findObject.setAttribute('placeholder', `${output}...`);
+				}
 			});
 	}
 }
