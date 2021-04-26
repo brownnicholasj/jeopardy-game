@@ -180,9 +180,24 @@ function createCategories(categoryArray) {
 	$('button').on('click', function(event){
 		console.log(event.target.id);
 		let answerSelector = $(this).attr('data-id');
+		let correctSelector = $(this).parent().siblings('.modal-header').children('.modal-title').attr('data-answer');
 		let userSubmission = $(`#floatingInput_${answerSelector}`).val();
-		checkAnswer(userSubmission)
+		let answerPackage = [];
+		answerPackage.push(correctSelector);
+		answerPackage.push(userSubmission);
+		checkAnswer(answerPackage)
 	})
+}
+
+function checkAnswer(answerPackage) {
+	console.log(answerPackage);
+	let answer = answerPackage[0].toLowerCase();
+	let submission = answerPackage[1].toLowerCase();
+	if (answer.includes(submission)) {
+		console.log(true);
+	} else {
+		console.log(false);
+	}
 }
 
 //function to create/populate questions section
@@ -260,9 +275,6 @@ function createQuestions(
 
 }
 
-function checkAnswer(userSubmission) {
-	console.log(userSubmission)
-}
 
 
 //function to create the modal (popup) inside each questionBox
