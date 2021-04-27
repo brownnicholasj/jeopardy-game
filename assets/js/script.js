@@ -177,20 +177,6 @@ function createCategories(categoryArray) {
 		);
 		boardContainer.append(catContainer);
 	}
-	$('button').on('click', function (event) {
-		console.log(event.target.id);
-		let answerSelector = $(this).attr('data-id');
-		let correctSelector = $(this)
-			.parent()
-			.siblings('.modal-header')
-			.children('.modal-title')
-			.attr('data-answer');
-		let userSubmission = $(`#floatingInput_${answerSelector}`).val();
-		let answerPackage = [];
-		answerPackage.push(correctSelector);
-		answerPackage.push(userSubmission);
-		checkAnswer(answerPackage);
-	});
 }
 
 function checkAnswer(answerPackage) {
@@ -199,17 +185,17 @@ function checkAnswer(answerPackage) {
 	if (answerPackage[1]) {
 		let submission = answerPackage[1].toLowerCase();
 		if (answer.includes(submission)) {
-			console.log(true);
+			scoreTally(true, answerPackage[2]);
 		} else {
-			console.log(false);
+			scoreTally(false, answerPackage[2]);
 		}
 	}
 	if (!answerPackage[1]) {
 		let submission = false;
 		if (answer.includes(submission)) {
-			console.log(true);
+			scoreTally(true, answerPackage[2]);
 		} else {
-			console.log(false);
+			scoreTally(false, answerPackage[2]);
 		}
 	}
 }
@@ -360,7 +346,7 @@ function createModal(container, id, amount, question, answer) {
 
 	var modalSubmit = document.createElement('button');
 	modalSubmit.setAttribute('type', 'button');
-	modalSubmit.setAttribute('id', `submit_${id}`);
+	modalSubmit.setAttribute('id', `submit`);
 	modalSubmit.setAttribute('data-id', id);
 	modalSubmit.setAttribute('class', 'btn');
 	modalSubmit.setAttribute('data-bs-dismiss', 'modal');
@@ -391,10 +377,13 @@ function handleFormSubmit(event) {
 //function to handle the clicking of the 'Submit' button inside the modal -- directs to the handleFormSubmit
 function handleButtonClick(event) {
 	event.preventDefault();
+	console.log('buttonClick1 id' + event);
 	if (event.target.id === 'submit') {
-		var answerValue =
-			event.target.parentNode.parentNode.childNodes[1].childNodes[0].childNodes[0]
-				.childNodes[0].value;
+		console.log('button click 2');
+		var answerHome =
+			event.target.parentNode.parentNode.childNodes[0].childNodes[1];
+		console.log(answerHome);
+		answerChecker(answerHome);
 		//currently just console logging answer until we can do something
 		// console.log(answerValue);
 		removeCatSquare(event.target);
@@ -402,6 +391,33 @@ function handleButtonClick(event) {
 	if (event.target.id === 'pass') {
 		removeCatSquare(event.target);
 	}
+}
+
+//Moved answerChecker from inside the modal and refactored to DOM elements to make it more dynamic and called when we need it
+//This move also allows us to rename the submit button to generic 'submit' and align with the handleButtonClick eventListener
+// REFACTORED, CAN REMOVE COMMENTS ONCE APPROVED
+// $('button').on('click', function (event)
+function answerChecker(event) {
+	console.log(event.getAttribute('id'));
+	let answerSelector = event.getAttribute('id');
+	let correctSelector = event.getAttribute('data-answer');
+	//REFACTORED, CAN REMOVE COMMENTS ONCE APPROVED
+	// .parent()
+	// .siblings('.modal-header')
+	// .children('.modal-title')
+	// .attr('data-answer');
+	let userSubmission = $(`#floatingInput_${answerSelector}`).val();
+	let valueSelector = event.getAttribute('data-value');
+	//REFACTORED, CAN REMOVE COMMENTS ONCE APPROVED
+	// .parent()
+	// .siblings('.modal-header')
+	// .children('.modal-title')
+	// .attr('data-value');
+	let answerPackage = [];
+	answerPackage.push(correctSelector);
+	answerPackage.push(userSubmission);
+	answerPackage.push(valueSelector);
+	checkAnswer(answerPackage);
 }
 
 function removeCatSquare(event) {
