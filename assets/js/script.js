@@ -62,9 +62,9 @@ function constrainGame(object) {
 	let keys = Object.keys(object);
 	let subKeys = Object.keys(object[keys[0]]);
 	let botKeys = Object.keys(object[keys[subKeys[0]]]);
-	console.log(keys)
-	console.log(subKeys)
-	console.log(botKeys)
+	console.log(keys);
+	console.log(subKeys);
+	console.log(botKeys);
 	for (let i = 0; i < keys.length; i++) {
 		for (let j = 0; j < object[keys[i]].length; j++) {
 			delete object[keys[i]][j].id;
@@ -76,18 +76,16 @@ function constrainGame(object) {
 			delete object[keys[i]][j].invalid_count;
 			delete object[keys[i]][j].updated_at;
 			if (object[keys[i]][j].value == 1000 || 800 || 600) {
-				object[keys[i]][j].value = (object[keys[i]][j].value)/2;
+				object[keys[i]][j].value = object[keys[i]][j].value / 2;
 			}
 			if (object[keys[i]][j].value == 1000 || 800 || 600) {
-				object[keys[i]][j].value = (object[keys[i]][j].value)/2;
+				object[keys[i]][j].value = object[keys[i]][j].value / 2;
 			}
-		}		
+		}
 	}
 
-	console.log(object)
+	console.log(object);
 }
-
-
 
 //************************************************************ Functions to get JService DATA ********* */
 
@@ -102,7 +100,7 @@ async function playGame() {
 	var questionsPull = data;
 	var questionsObject = await organizeData(questionsPull);
 	console.log('questionsObject :>> ', questionsObject);
-	
+
 	saveSession(questionsObject);
 	// createCategories(Object.getOwnPropertyNames(questionsObject));
 	createCategories(questionsObject);
@@ -179,26 +177,40 @@ function createCategories(categoryArray) {
 		);
 		boardContainer.append(catContainer);
 	}
-	$('button').on('click', function(event){
+	$('button').on('click', function (event) {
 		console.log(event.target.id);
 		let answerSelector = $(this).attr('data-id');
-		let correctSelector = $(this).parent().siblings('.modal-header').children('.modal-title').attr('data-answer');
+		let correctSelector = $(this)
+			.parent()
+			.siblings('.modal-header')
+			.children('.modal-title')
+			.attr('data-answer');
 		let userSubmission = $(`#floatingInput_${answerSelector}`).val();
 		let answerPackage = [];
 		answerPackage.push(correctSelector);
 		answerPackage.push(userSubmission);
-		checkAnswer(answerPackage)
-	})
+		checkAnswer(answerPackage);
+	});
 }
 
 function checkAnswer(answerPackage) {
 	console.log(answerPackage);
 	let answer = answerPackage[0].toLowerCase();
-	let submission = answerPackage[1].toLowerCase();
-	if (answer.includes(submission)) {
-		console.log(true);
-	} else {
-		console.log(false);
+	if (answerPackage[1]) {
+		let submission = answerPackage[1].toLowerCase();
+		if (answer.includes(submission)) {
+			console.log(true);
+		} else {
+			console.log(false);
+		}
+	}
+	if (!answerPackage[1]) {
+		let submission = false;
+		if (answer.includes(submission)) {
+			console.log(true);
+		} else {
+			console.log(false);
+		}
 	}
 }
 
@@ -275,10 +287,7 @@ function createQuestions(
 		createModal(catAContainer, questId, amount, question, answer);
 		container.append(catAContainer);
 	}
-
 }
-
-
 
 //function to create the modal (popup) inside each questionBox
 function createModal(container, id, amount, question, answer) {
@@ -370,8 +379,6 @@ function createModal(container, id, amount, question, answer) {
 	modalDialog.append(modalContent);
 	modalFade.append(modalDialog);
 	container.append(modalFade);
-	
-	
 }
 
 //function to handle the submit event (pressing 'enter' after input)
@@ -386,8 +393,8 @@ function handleButtonClick(event) {
 	event.preventDefault();
 	if (event.target.id === 'submit') {
 		var answerValue =
-			event.target.parentNode.parentNode.childNodes[1].childNodes[0]
-				.childNodes[0].childNodes[0].value;
+			event.target.parentNode.parentNode.childNodes[1].childNodes[0].childNodes[0]
+				.childNodes[0].value;
 		//currently just console logging answer until we can do something
 		// console.log(answerValue);
 		removeCatSquare(event.target);
@@ -489,24 +496,64 @@ function defineWord(word, id) {
 
 function getBoxValues(category, num) {
 	var box = {};
-	for (let value of Object.values(category)) {
-		if (typeof box === 'object' && box !== null) {
+	for (i = 0; i < 5; i++) {
+		if (typeof box === 'object' && box) {
 			// console.log('box 1 statement 1 true');
-			if (value.value == 100 * num) {
+			if (num === 1) {
 				// console.log('100 value here');
-				box.value = value.value;
-				box.question = value.question;
-				box.answer = value.answer;
-			} else if (value.value == 200 * num) {
-				// console.log('200 value here');
-				box.value = value.value;
-				box.question = value.question;
-				box.answer = value.answer;
+				box.value = 100;
+				box.question = category[num - 1].question;
+				box.answer = category[num - 1].answer;
+			}
+			if (num === 2) {
+				// console.log('100 value here');
+				box.value = 200;
+				box.question = category[num - 1].question;
+				box.answer = category[num - 1].answer;
+			}
+			if (num === 3) {
+				// console.log('100 value here');
+				box.value = 300;
+				box.question = category[num - 1].question;
+				box.answer = category[num - 1].answer;
+			}
+			if (num === 4) {
+				// console.log('100 value here');
+				box.value = 400;
+				box.question = category[num - 1].question;
+				box.answer = category[num - 1].answer;
+			}
+			if (num === 5) {
+				// console.log('100 value here');
+				box.value = 500;
+				box.question = category[num - 1].question;
+				box.answer = category[num - 1].answer;
 			}
 		}
 	}
 	return box;
 }
+
+// function getBoxValues(category, num) {
+// 	var box = {};
+// 	for (let value of Object.values(category)) {
+// 		if (typeof box === 'object' && box !== null) {
+// 			// console.log('box 1 statement 1 true');
+// 			if (value.value == 100 * num) {
+// 				// console.log('100 value here');
+// 				box.value = value.value;
+// 				box.question = value.question;
+// 				box.answer = value.answer;
+// 			} else if (value.value == 200 * num) {
+// 				// console.log('200 value here');
+// 				box.value = value.value;
+// 				box.question = value.question;
+// 				box.answer = value.answer;
+// 			}
+// 		}
+// 	}
+// 	return box;
+// }
 
 function getQvalues(
 	boxCount,
