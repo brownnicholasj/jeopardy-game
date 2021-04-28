@@ -189,11 +189,11 @@ function createCategories(categoryArray) {
 function checkAnswer(answerPackage) {
 	console.log(answerPackage);
 	let answer = answerPackage[0].toLowerCase();
-	let correct;
 	if (!answerPackage[3]) {
 		if (answerPackage[1]) {
 			let submission = answerPackage[1].toLowerCase();
-			if (answer.includes(submission)) {
+			let lengthCheck = validateSubmissionLength(answer, submission);
+			if (answer.includes(submission) && lengthCheck) {
 				scoreTally(true, answerPackage[2]);
 				answerPackage.push(true);
 			} else {
@@ -216,6 +216,22 @@ function checkAnswer(answerPackage) {
 		answerToast(answerPackage)
 	}
 	
+}
+
+function validateSubmissionLength(answer, submission) {
+	if (answer.length > 12) {
+		if (submission.length > (answer.length / 4)) {
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		if (submission.length > (answer.length / 2)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 
 //function to create/populate questions section
