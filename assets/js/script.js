@@ -125,7 +125,7 @@ async function organizeData(data) {
 
 async function getQuestions(category) {
 	var response = await fetch(
-		'http://jservice.io/api/clues?category=' + category
+		'https://jservice.io/api/clues?category=' + category
 	);
 	var data = await response.json();
 	return data;
