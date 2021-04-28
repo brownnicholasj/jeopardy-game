@@ -185,33 +185,37 @@ function createCategories(categoryArray) {
 		boardContainer.append(catContainer);
 	}
 }
-
-function checkAnswer(answerPackage, boolean) {
+//BEGIN CHECK ANSWER ADJUSTMENT.
+function checkAnswer(answerPackage) {
 	console.log(answerPackage);
-
 	let answer = answerPackage[0].toLowerCase();
 	let correct;
-	if (answerPackage[1]) {
-		let submission = answerPackage[1].toLowerCase();
-		if (answer.includes(submission)) {
-			scoreTally(true, answerPackage[2]);
-			correct = true;
-		} else {
-			scoreTally(false, answerPackage[2]);
-			correct = false;
+	if (!answerPackage[3]) {
+		if (answerPackage[1]) {
+			let submission = answerPackage[1].toLowerCase();
+			if (answer.includes(submission)) {
+				scoreTally(true, answerPackage[2]);
+				answerPackage.push(true);
+			} else {
+				scoreTally(false, answerPackage[2]);
+				answerPackage.push(false);
+			}
 		}
-	}
-	if (!answerPackage[1]) {
-		let submission = false;
-		if (answer.includes(submission)) {
-			scoreTally(true, answerPackage[2]);
-			correct = true;
-		} else {
-			scoreTally(false, answerPackage[2]);
-			correct = false;
+		if (!answerPackage[1]) {
+			let submission = false;
+			if (answer.includes(submission)) {
+				scoreTally(true, answerPackage[2]);
+				answerPackage.push(true);
+			} else {
+				scoreTally(false, answerPackage[2]);
+				answerPackage.push(false);
+			}
 		}
+		answerToast(answerPackage);
+	} else {
+		answerToast(answerPackage)
 	}
-	answerToast(answerPackage, correct, boolean);
+	
 }
 
 //function to create/populate questions section
@@ -397,7 +401,7 @@ function handleButtonClick(event) {
 		console.log('button click 2');
 		var answerHome =
 			event.target.parentNode.parentNode.childNodes[0].childNodes[1];
-		answerChecker(answerHome, false);
+		answerHandler(answerHome, false);
 		//currently just console logging answer until we can do something
 		// console.log(answerValue);
 		removeCatSquare(event.target);
@@ -406,7 +410,7 @@ function handleButtonClick(event) {
 		var answerHome =
 			event.target.parentNode.parentNode.childNodes[0].childNodes[1];
 		removeCatSquare(event.target);
-		answerChecker(answerHome, true);
+		answerHandler(answerHome, true);
 		showToast();
 		audioSound('timesUp');
 	} else if (event.target.id === 'topTitle') {
@@ -415,7 +419,7 @@ function handleButtonClick(event) {
 }
 
 //
-function answerChecker(event, boolean) {
+function answerHandler(event, boolean) {
 	console.log(event.getAttribute('id'));
 	let answerSelector = event.getAttribute('id');
 	let correctSelector = event.getAttribute('data-answer');
@@ -425,15 +429,16 @@ function answerChecker(event, boolean) {
 	answerPackage.push(correctSelector);
 	answerPackage.push(userSubmission);
 	answerPackage.push(valueSelector);
-	checkAnswer(answerPackage, boolean);
+	answerPackage.push(boolean);
+	checkAnswer(answerPackage);
 }
 
-function answerToast(package, boolean, pass) {
+function answerToast(package) {
 	console.log(package);
 	console.log(`answer (from Jservice):` + package[0]);
 	console.log(`answer (from user):` + package[1]);
 	console.log(`value:` + package[2]);
-	console.log('correct?:' + boolean);
+	console.log('correct?:' + package[4]);
 
 	var toast = document.createElement('div');
 	var tHeader = document.createElement('div');
@@ -447,11 +452,11 @@ function answerToast(package, boolean, pass) {
 	correctA.innerHTML = `The Correct Answer is <br> ${package[0]}`;
 	userA.setAttribute('id', 'userA');
 	solve.setAttribute('class', 'me-auto');
-	if (pass === false) {
+	if (!package[3]) {
 		userA.innerHTML = `Your Answer was <br> ${package[1]}`;
 
 		var correct;
-		if (boolean === true) {
+		if (package[4] === true) {
 			correct = 'You are Correct!';
 			value.innerText = `+ ${package[2]}`;
 			audioSound('rightAnswer');
