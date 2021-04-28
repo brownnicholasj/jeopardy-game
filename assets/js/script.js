@@ -1,5 +1,7 @@
 // delegation event listener for board
 var answerSubmit = document.getElementById('boardContainer');
+var titleLink = document.getElementById('topTitle');
+var themeSwitch = false;
 
 //Function that gives user the option to reload their last session. The internal code at this point is arbitrary, but I wanted something there for testing the functionality.
 function continueLastGame() {
@@ -12,11 +14,15 @@ function continueLastGame() {
 	let playNew = $('#confirmNew');
 	playSave.on('click', function (event) {
 		event.preventDefault();
+		var currentTime = setInterval(timeBox, 1000);
+		audioSound('startGame');
 		let questionsObject = recoverSession();
 		createCategories(questionsObject);
 	});
 	playNew.on('click', function (event) {
 		event.preventDefault();
+		var currentTime = setInterval(timeBox, 1000);
+		audioSound('startGame');
 		playGame();
 	});
 }
@@ -104,6 +110,7 @@ async function playGame() {
 	saveSession(questionsObject);
 	// createCategories(Object.getOwnPropertyNames(questionsObject));
 	createCategories(questionsObject);
+	audioSound('boardGeneration');
 }
 
 async function organizeData(data) {
@@ -401,6 +408,9 @@ function handleButtonClick(event) {
 		removeCatSquare(event.target);
 		answerChecker(answerHome, true);
 		showToast();
+		audioSound('timesUp');
+	} else if (event.target.id === 'topTitle') {
+		audioSound('theme');
 	}
 }
 
@@ -444,10 +454,12 @@ function answerToast(package, boolean, pass) {
 		if (boolean === true) {
 			correct = 'You are Correct!';
 			value.innerText = `+ ${package[2]}`;
+			audioSound('rightAnswer');
 		} else {
 			correct = 'Incorrect';
 			value.innerText = `- ${package[2]}`;
 			value.setAttribute('id', 'valuefalse');
+			audioSound('timesUp');
 		}
 		solve.innerText = correct;
 	} else {
@@ -687,6 +699,51 @@ function getQvalues(
 	}
 }
 
+//function to find and play sound
+function audioSound(selection) {
+	if (selection === 'theme') {
+		if (themeSwitch === false) {
+			var path = 'assets/audio/';
+			var snd = new Audio(path + selection + '.mp3');
+			snd.play();
+			themeSwitch = true;
+		}
+	}
+	if (selection !== 'theme') {
+		var path = 'assets/audio/';
+		var snd = new Audio(path + selection + '.mp3');
+		snd.play();
+	}
+}
+
+function timeBox() {
+	roundTime = document.getElementById('timeBox').getAttribute('data-time');
+	if (roundTime === '' || roundTime === null) {
+		roundTime = 900;
+	} else {
+		roundTime--;
+	}
+	if (roundTime === 0) {
+		stoptimeBox();
+	}
+	var minute = Math.floor(roundTime / 60);
+	var second = roundTime - minute * 60;
+	leadZero(second);
+	function leadZero(int) {
+		var sec = int.toString();
+		while (sec.length < 2) sec = '0' + sec;
+		second = sec;
+	}
+	var timerLog = `${minute}:${second}`;
+	document.getElementById('timeBox').innerText = timerLog;
+	document.getElementById('timeBox').setAttribute('data-time', roundTime);
+}
+
+function stoptimeBox() {
+	clearInterval(currentTime);
+}
+
 //event Listeners
 answerSubmit.addEventListener('submit', handleFormSubmit);
 answerSubmit.addEventListener('click', handleButtonClick);
+titleLink.addEventListener('click', handleButtonClick);
