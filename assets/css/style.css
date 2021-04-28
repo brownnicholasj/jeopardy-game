@@ -241,6 +241,28 @@ form {
 	cursor: pointer;
 }
 
+#toast {
+	position: fixed;
+	top: 10%;
+	left: 30%;
+	height: 50%;
+	width: 40%;
+	z-index: 1000;
+	font-family: 'Nanum Pen Script', cursive;
+	font-size: clamp(0.75rem, 0.75rem + 2vw, 3rem);
+	background-color: var(--grad-bg-color);
+}
+
+.toast-header {
+	background-color: var(--main-bg-color);
+	color: white;
+	justify-content: space-between;
+}
+
+.toast-header #valuefalse {
+	color: red;
+}
+
 @media (min-width: 576px) {
 	#boardContainer {
 		height: 60vh;
