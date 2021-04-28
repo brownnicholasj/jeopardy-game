@@ -1,0 +1,299 @@
+:root {
+	--main-bg-color: #060ce9;
+	--grad-bg-color: #7074e0;
+}
+
+html {
+	height: 100%;
+}
+
+body {
+	margin: auto;
+	background-image: radial-gradient(
+		ellipse,
+		var(--grad-bg-color),
+		var(--main-bg-color)
+	);
+	font-size: 1rem;
+	color: white;
+	font-family: 'ZCOOL QingKe HuangYou', cursive;
+}
+
+#continue .btn {
+	border: 3px solid black;
+	box-shadow: 2px 2px 3px black;
+	padding: 5px;
+	color: white;
+	text-shadow: 2px 2px 3px black;
+	font-size: clamp(0.75rem, 0.75rem + 2vw, 3rem);
+	width: 25vw;
+}
+
+#topRow {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 2%;
+	margin-top: 2%;
+}
+
+#topBox {
+	border: 2px solid black;
+	padding: 5px;
+	box-shadow: 2px 2px 3px black;
+	min-height: 6vh;
+	width: 8vw;
+	display: inline-flex;
+	justify-content: center;
+}
+
+#topBox > h4 {
+	font-size: clamp(8px, 8vw, 24px);
+	margin: 0;
+}
+
+#topTitle {
+	font-size: clamp(8px, 10vw, 60px);
+	padding: 5px;
+	color: rgb(241, 157, 60);
+	font-weight: 700;
+	text-shadow: 1px 0px 1px black, 0px 1px 1px gray, 2px 1px 1px black,
+		1px 2px 1px gray, 3px 2px 1px black, 2px 3px 1px gray, 4px 3px 1px black,
+		3px 4px 1px gray, 5px 4px 1px black, 4px 5px 1px gray, 6px 5px 1px black,
+		5px 6px 1px gray, 7px 6px 1px black;
+	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+#boardContainer {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	border: 2px solid black;
+	height: 80vh;
+}
+
+#continue {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#continue button {
+	border-radius: 4px;
+	margin: 10px;
+	padding: 5px;
+	width: 12%;
+	color: white;
+	background-color: var(--grad-bg-color);
+}
+
+#catContainer {
+	border: 1px solid black;
+	word-wrap: break-word;
+	height: 16.67%;
+}
+
+#catBox {
+	border: 1px solid black;
+	box-shadow: 2px 2px 3px black;
+	padding: 5px;
+	padding-top: 0px;
+	color: white;
+	text-shadow: 2px 2px 3px black;
+	height: 40%;
+	align-content: center;
+}
+
+#catBox h4 {
+	font-size: clamp(14px, 4vw, 20px);
+	margin: 0;
+	position: relative;
+	top: 0;
+	font-family: 'Roboto', sans-serif;
+}
+
+#catAContainer {
+	display: flex;
+	flex-direction: row;
+	height: 60%;
+}
+
+#questBox {
+	border: 1px solid black;
+	box-shadow: 2px 2px 3px black;
+	padding: 5px;
+	color: rgb(241, 157, 60);
+	font-weight: 700;
+	font-size: clamp(0.75rem, 0.75rem + 2vw, 3rem);
+	text-shadow: 5px 8px 3px black;
+	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+a:not([href]):not([tabinex]) {
+	color: rgb(241, 157, 60);
+}
+
+#questBox:hover {
+	border: 3px solid white;
+	box-shadow: 2px 2px 3px white;
+	cursor: pointer;
+}
+
+.modal-content {
+	background-image: radial-gradient(
+		ellipse,
+		var(--grad-bg-color),
+		var(--main-bg-color)
+	);
+	min-height: 30vh;
+	min-width: 40vw;
+	font-size: clamp(0.75rem, 0.75rem + 2vw, 3rem);
+	font-family: 'Roboto', sans-serif;
+}
+
+.modal-header {
+	align-items: top;
+	border: 3px solid black;
+	height: 30vh;
+	font-size: clamp(8px, 1rem + 1vw, 32px);
+	font-family: 'Roboto', sans-serif;
+}
+
+.modal-header .modal-title {
+	justify-self: flex-start;
+	align-self: center;
+	min-width: 70%;
+	text-align: left;
+	margin-left: 10px;
+	font-size: clamp(8px, 1rem + 1vw, 32px);
+	font-family: 'Roboto', sans-serif;
+}
+
+/* display set to none until ready to show */
+.modal-header #modaltimer {
+	display: none;
+	text-align: right;
+	align-self: flex-start;
+	min-width: 10%;
+}
+
+.modal-body {
+	border: 3px solid black;
+	height: 100%;
+}
+
+form {
+	height: 30vh;
+}
+
+.form-group {
+	margin: 0;
+	height: 100%;
+}
+
+.form-control {
+	background-color: var(--main-bg-color);
+	box-shadow: 2px 2px 10px black;
+	height: 80%;
+	align-self: center;
+	font-size: clamp(8px, 1rem + 1vw, 32px);
+	color: white;
+	font-family: 'Nanum Pen Script', cursive;
+}
+
+.form-control::placeholder {
+	color: white;
+	opacity: 1;
+}
+
+.form-control:focus {
+	background-color: var(--main-bg-color);
+	box-shadow: 2px 2px 10px black;
+	align-self: center;
+	color: white;
+	font-size: 2rem;
+}
+.modal-title {
+	margin-left: 4px;
+}
+
+.modal-footer {
+	justify-content: center;
+	height: 100%;
+	border: 3px solid black;
+}
+
+.modal-footer .btn {
+	border: 3px solid black;
+	box-shadow: 2px 2px 3px black;
+	padding: 5px;
+	color: white;
+	text-shadow: 2px 2px 3px black;
+	font-size: clamp(0.75rem, 0.75rem + 2vw, 3rem);
+	width: 25vw;
+}
+
+.modal-footer .btn:hover {
+	border: 3px solid white;
+	box-shadow: 2px 2px 3px white;
+	cursor: pointer;
+}
+
+#toast {
+	position: fixed;
+	top: 10%;
+	left: 30%;
+	height: 50%;
+	width: 40%;
+	z-index: 1000;
+	font-family: 'Nanum Pen Script', cursive;
+	font-size: clamp(0.75rem, 0.75rem + 2vw, 3rem);
+	background-color: var(--grad-bg-color);
+}
+
+.toast-header {
+	background-color: var(--main-bg-color);
+	color: white;
+	justify-content: space-between;
+}
+
+.toast-header #valuefalse {
+	color: red;
+}
+
+@media (min-width: 576px) {
+	#boardContainer {
+		height: 60vh;
+	}
+
+	#catContainer {
+		height: 100%;
+	}
+
+	#catBox {
+		height: 20%;
+	}
+
+	#catBox > div {
+		margin: 0;
+		padding: 0;
+	}
+
+	#catAContainer {
+		height: 80%;
+	}
+
+	#questBox {
+		height: 20%;
+	}
+	#continue button {
+		width: 40%;
+	}
+}
+@media (max-width: 576px) {
+	#continue button {
+		width: 40%;
+	}
+}
