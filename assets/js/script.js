@@ -5,7 +5,7 @@ var answerSubmit = document.getElementById('boardContainer');
 function continueLastGame() {
 	$('#boardContainer').append('<div id="continue"></div>');
 	let continueDiv = $('#continue');
-	continueDiv.append('<p>Saved game detected. Do you want to continue?</p>');
+	continueDiv.append('<p>Do you want to replay the same board?</p>');
 	continueDiv.append('<button id="confirmSave">Yes</button>');
 	continueDiv.append('<button id="confirmNew">No</button>');
 	let playSave = $('#confirmSave');
@@ -179,25 +179,32 @@ function createCategories(categoryArray) {
 	}
 }
 
-function checkAnswer(answerPackage) {
+function checkAnswer(answerPackage, boolean) {
 	console.log(answerPackage);
+
 	let answer = answerPackage[0].toLowerCase();
+	let correct;
 	if (answerPackage[1]) {
 		let submission = answerPackage[1].toLowerCase();
 		if (answer.includes(submission)) {
 			scoreTally(true, answerPackage[2]);
+			correct = true;
 		} else {
 			scoreTally(false, answerPackage[2]);
+			correct = false;
 		}
 	}
 	if (!answerPackage[1]) {
 		let submission = false;
 		if (answer.includes(submission)) {
 			scoreTally(true, answerPackage[2]);
+			correct = true;
 		} else {
 			scoreTally(false, answerPackage[2]);
+			correct = false;
 		}
 	}
+	answerToast(answerPackage, correct, boolean);
 }
 
 //function to create/populate questions section
@@ -378,46 +385,110 @@ function handleFormSubmit(event) {
 function handleButtonClick(event) {
 	event.preventDefault();
 	console.log('buttonClick1 id' + event);
+
 	if (event.target.id === 'submit') {
 		console.log('button click 2');
 		var answerHome =
 			event.target.parentNode.parentNode.childNodes[0].childNodes[1];
-		console.log(answerHome);
-		answerChecker(answerHome);
+		answerChecker(answerHome, false);
 		//currently just console logging answer until we can do something
 		// console.log(answerValue);
 		removeCatSquare(event.target);
-	}
-	if (event.target.id === 'pass') {
+		showToast();
+	} else if (event.target.id === 'pass') {
+		var answerHome =
+			event.target.parentNode.parentNode.childNodes[0].childNodes[1];
 		removeCatSquare(event.target);
+		answerChecker(answerHome, true);
+		showToast();
 	}
 }
 
-//Moved answerChecker from inside the modal and refactored to DOM elements to make it more dynamic and called when we need it
-//This move also allows us to rename the submit button to generic 'submit' and align with the handleButtonClick eventListener
-// REFACTORED, CAN REMOVE COMMENTS ONCE APPROVED
-// $('button').on('click', function (event)
-function answerChecker(event) {
+//
+function answerChecker(event, boolean) {
 	console.log(event.getAttribute('id'));
 	let answerSelector = event.getAttribute('id');
 	let correctSelector = event.getAttribute('data-answer');
-	//REFACTORED, CAN REMOVE COMMENTS ONCE APPROVED
-	// .parent()
-	// .siblings('.modal-header')
-	// .children('.modal-title')
-	// .attr('data-answer');
 	let userSubmission = $(`#floatingInput_${answerSelector}`).val();
 	let valueSelector = event.getAttribute('data-value');
-	//REFACTORED, CAN REMOVE COMMENTS ONCE APPROVED
-	// .parent()
-	// .siblings('.modal-header')
-	// .children('.modal-title')
-	// .attr('data-value');
 	let answerPackage = [];
 	answerPackage.push(correctSelector);
 	answerPackage.push(userSubmission);
 	answerPackage.push(valueSelector);
-	checkAnswer(answerPackage);
+	checkAnswer(answerPackage, boolean);
+}
+
+function answerToast(package, boolean, pass) {
+	console.log(package);
+	console.log(`answer (from Jservice):` + package[0]);
+	console.log(`answer (from user):` + package[1]);
+	console.log(`value:` + package[2]);
+	console.log('correct?:' + boolean);
+
+	var toast = document.createElement('div');
+	var tHeader = document.createElement('div');
+	var solve = document.createElement('strong');
+	var value = document.createElement('small');
+	var body = document.createElement('div');
+	var userA = document.createElement('h4');
+	var correctA = document.createElement('h4');
+
+	correctA.setAttribute('id', 'correctA');
+	correctA.innerHTML = `The Correct Answer is <br> ${package[0]}`;
+	userA.setAttribute('id', 'userA');
+	solve.setAttribute('class', 'me-auto');
+	if (pass === false) {
+		userA.innerHTML = `Your Answer was <br> ${package[1]}`;
+
+		var correct;
+		if (boolean === true) {
+			correct = 'You are Correct!';
+			value.innerText = `+ ${package[2]}`;
+		} else {
+			correct = 'Incorrect';
+			value.innerText = `- ${package[2]}`;
+			value.setAttribute('id', 'valuefalse');
+		}
+		solve.innerText = correct;
+	} else {
+		solve.innerText = `Not Answered`;
+	}
+
+	body.setAttribute('class', 'toast-body');
+	body.append(correctA);
+	body.append(userA);
+
+	tHeader.setAttribute('class', 'toast-header');
+	tHeader.append(solve);
+	tHeader.append(value);
+
+	toast.setAttribute('class', 'toast');
+	toast.setAttribute('role', 'alert');
+	toast.setAttribute('aria-live', 'assertive');
+	toast.setAttribute('aria-atomic', 'true');
+	toast.setAttribute('id', 'toast');
+	toast.setAttribute('data-autohide', 'false');
+	toast.append(tHeader);
+	toast.append(body);
+
+	mainBody = document.getElementById('boardContainer');
+	mainBody.append(toast);
+
+	// 	<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+	//   <div class="toast-header">
+	//     <img src="..." class="rounded me-2" alt="...">
+	//     <strong class="me-auto">Bootstrap</strong>
+	//     <small>11 mins ago</small>
+	//     <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+	//   </div>
+	//   <div class="toast-body">
+	//     Hello, world! This is a toast message.
+	//   </div>
+	// </div>
+}
+
+function showToast() {
+	$('.toast').toast('show');
 }
 
 function removeCatSquare(event) {
@@ -549,27 +620,6 @@ function getBoxValues(category, num) {
 	}
 	return box;
 }
-
-// function getBoxValues(category, num) {
-// 	var box = {};
-// 	for (let value of Object.values(category)) {
-// 		if (typeof box === 'object' && box !== null) {
-// 			// console.log('box 1 statement 1 true');
-// 			if (value.value == 100 * num) {
-// 				// console.log('100 value here');
-// 				box.value = value.value;
-// 				box.question = value.question;
-// 				box.answer = value.answer;
-// 			} else if (value.value == 200 * num) {
-// 				// console.log('200 value here');
-// 				box.value = value.value;
-// 				box.question = value.question;
-// 				box.answer = value.answer;
-// 			}
-// 		}
-// 	}
-// 	return box;
-// }
 
 function getQvalues(
 	boxCount,
