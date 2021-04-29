@@ -98,44 +98,68 @@ function constrainGame(object) {
 var object = {};
 
 async function playGame() {
-	var randomNumber = Math.floor(Math.random() * 10000);
-	var response = await fetch(
-		'https://jservice.io/api/categories?count=6&offset=' + randomNumber
-	);
-	var data = await response.json();
-	var questionsPull = data;
-	var questionsObject = await organizeData(questionsPull);
+	var questionsObject = {};
+	var potentialNewCategory = await getNewCategory();
+	var duplicatesArray = [];
+	while (Object.keys(questionsObject).length < 6) {
+		var potentialNewCategory = await getNewCategory();
+		if (
+			potentialNewCategory === false ||
+			duplicatesArray.includes(Object.keys(potentialNewCategory)[0])
+		) {
+			console.log('category is false');
+		} else {
+			questionsObject[Object.keys(potentialNewCategory)[0]] = Object.values(
+				potentialNewCategory
+			)[0];
+			duplicatesArray.push(Object.keys(potentialNewCategory)[0]);
+			//here we add the new category to the questionsobject property
+			console.log('category is true');
+		}
+	}
 	console.log('questionsObject :>> ', questionsObject);
-
 	saveSession(questionsObject);
 	// createCategories(Object.getOwnPropertyNames(questionsObject));
 	createCategories(questionsObject);
+
 	audioSound('boardGeneration');
 }
 
-async function organizeData(data) {
-	var allQuestions = {};
-	if (data) {
-		console.log(data);
-		for (let i = 0; i < data.length; i++) {
-			var questionResponse = await getQuestions(data[i].id);
-			allQuestions[data[i].title] = questionResponse;
-
-			var questionBank = {
-				[data[i].title]: questionResponse,
-			};
-		}
-	}
-	console.log('FINAL QUESTION BANK: >> ', allQuestions);
-	return allQuestions;
-}
-
-async function getQuestions(category) {
+async function getNewCategory() {
 	var response = await fetch(
-		'https://jservice.io/api/clues?category=' + category
+		'https://jservice.io/api/category?id=' + Math.floor(Math.random() * 10000)
 	);
 	var data = await response.json();
-	return data;
+	var questionsPull = data;
+	if (questionsPull.clues.length > 5) {
+		console.log('questionsPull.clues unshuffled :>> ', questionsPull.clues);
+		questionsPull.clues = questionsPull.clues
+			.map((a) => ({ sort: Math.random(), value: a }))
+			.sort((a, b) => a.sort - b.sort)
+			.map((a) => a.value);
+		console.log('shuffled :>> ', questionsPull.clues);
+		// shuffle(questionsPull.clues);
+		// console.log('questionsPull.clues :>> ', questionsPull.clues);
+	}
+	var newObjectProperty = await organizeData(questionsPull);
+	console.log('newObjectProperty :>> ', newObjectProperty);
+	if (newObjectProperty === false) {
+		return false;
+	} else {
+		return newObjectProperty;
+	}
+}
+
+async function organizeData(data) {
+	var currentCategoryObject = {};
+	// console.log('data :>> ', data);
+	for (let i = 0; i < 5; i++) {
+		if (!data.clues[i].question || !data.clues[i].answer) {
+			return false;
+		}
+	}
+	currentCategoryObject[data.title] = data.clues;
+	return currentCategoryObject;
 }
 
 //function to create/populate the board
@@ -161,7 +185,10 @@ function createCategories(categoryArray) {
 		catBox.append(catHeadcontainer);
 		catContainer.append(catBox);
 		// console.log(categoryArray)
-		// console.log(Object.values(categoryArray)[i]);
+		console.log(
+			'Object.values(categoryArray[i], i = ' + i + ' =>>',
+			Object.values(categoryArray)[i]
+		);
 		var box1Values = getBoxValues(Object.values(categoryArray)[i], 1);
 		var box2Values = getBoxValues(Object.values(categoryArray)[i], 2);
 		var box3Values = getBoxValues(Object.values(categoryArray)[i], 3);
@@ -213,20 +240,19 @@ function checkAnswer(answerPackage) {
 		}
 		answerToast(answerPackage);
 	} else {
-		answerToast(answerPackage)
+		answerToast(answerPackage);
 	}
-	
 }
 
 function validateSubmissionLength(answer, submission) {
 	if (answer.length > 12) {
-		if (submission.length > (answer.length / 4)) {
+		if (submission.length > answer.length / 4) {
 			return true;
 		} else {
 			return false;
 		}
 	} else {
-		if (submission.length > (answer.length / 2)) {
+		if (submission.length > answer.length / 2) {
 			return true;
 		} else {
 			return false;
@@ -614,6 +640,8 @@ function defineWord(word, id) {
 	}
 }
 
+var everyQuestionArray = [];
+
 function getBoxValues(category, num) {
 	var box = {};
 	for (i = 0; i < 5; i++) {
@@ -651,6 +679,8 @@ function getBoxValues(category, num) {
 			}
 		}
 	}
+	everyQuestionArray.push(box);
+	console.log('everyQuestionArray :>> ', everyQuestionArray);
 	return box;
 }
 
