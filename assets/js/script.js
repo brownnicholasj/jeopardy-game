@@ -360,9 +360,9 @@ async function createModal(container, id, amount, question, answer) {
 
 	// store the question here
 	var modalQuestion = document.createElement('h5');
-	modalQuestion.setAttribute('class', 'modal-title');
-	modalQuestion.setAttribute('id', `modal_${id}`);
-	modalQuestion.setAttribute('name', `modal_${id}`);
+	modalQuestion.setAttribute('class', `modal-title modal_${id}`);
+	modalQuestion.setAttribute('id', id);
+//	modalQuestion.setAttribute('name', `modal_${id}`);
 	modalQuestion.setAttribute('data-answer', answer);
 	modalQuestion.setAttribute('data-value', amount);
 	modalQuestion.innerHTML = question;
@@ -442,8 +442,8 @@ function handleButtonClick(event) {
 	console.log(event.target.id);
 	if (event.target.id === 'submit') {
 		console.log('button click 2');
-		var answerHome =
-			event.target.parentNode.parentNode.childNodes[0].childNodes[1];
+		var answerHome = event.target.parentNode.parentNode.childNodes[0].childNodes[1];
+		console.log(answerHome)
 		answerHandler(answerHome, false);
 		//currently just console logging answer until we can do something
 		// console.log(answerValue);
@@ -461,7 +461,7 @@ function handleButtonClick(event) {
 	} else if (event.target.id === 'questBox') {
 		let clueTarget = $(event.target);
 		let clueName = clueTarget.attr('name');
-		let answerTarget = $(`#modal_${clueName}`);
+		let answerTarget = $(`.modal_${clueName}`);
 		let answerName = answerTarget.attr('data-answer');
 		console.log(answerName);
 		defineWord(answerName, `phrase_${clueName}`)
