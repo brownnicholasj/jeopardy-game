@@ -213,20 +213,19 @@ function checkAnswer(answerPackage) {
 		}
 		answerToast(answerPackage);
 	} else {
-		answerToast(answerPackage)
+		answerToast(answerPackage);
 	}
-	
 }
 
 function validateSubmissionLength(answer, submission) {
 	if (answer.length > 12) {
-		if (submission.length > (answer.length / 4)) {
+		if (submission.length > answer.length / 4) {
 			return true;
 		} else {
 			return false;
 		}
 	} else {
-		if (submission.length > (answer.length / 2)) {
+		if (submission.length > answer.length / 2) {
 			return true;
 		} else {
 			return false;
@@ -722,18 +721,21 @@ function getQvalues(
 
 //function to find and play sound
 function audioSound(selection) {
-	if (selection === 'theme') {
-		if (themeSwitch === false) {
+	var mute = document.getElementById('mute');
+	if (mute.getAttribute('data-status') === 'true') {
+		if (selection === 'theme') {
+			if (themeSwitch === false) {
+				var path = 'assets/audio/';
+				var snd = new Audio(path + selection + '.mp3');
+				snd.play();
+				themeSwitch = true;
+			}
+		}
+		if (selection !== 'theme') {
 			var path = 'assets/audio/';
 			var snd = new Audio(path + selection + '.mp3');
 			snd.play();
-			themeSwitch = true;
 		}
-	}
-	if (selection !== 'theme') {
-		var path = 'assets/audio/';
-		var snd = new Audio(path + selection + '.mp3');
-		snd.play();
 	}
 }
 
@@ -764,7 +766,21 @@ function stoptimeBox() {
 	clearInterval(currentTime);
 }
 
+//checks the status of the mute button to toggle on/off
+function muteHandler() {
+	mute = document.getElementById('mute');
+	var currState = document.getElementById('mute');
+	if (currState.getAttribute('data-status') === 'false') {
+		currState.setAttribute('class', 'fas fa-volume-up');
+		currState.setAttribute('data-status', 'true');
+	} else {
+		currState.setAttribute('class', 'fas fa-volume-mute');
+		currState.setAttribute('data-status', 'false');
+	}
+}
+
 //event Listeners
 answerSubmit.addEventListener('submit', handleFormSubmit);
 answerSubmit.addEventListener('click', handleButtonClick);
 titleLink.addEventListener('click', handleButtonClick);
+mute.addEventListener('click', muteHandler);
