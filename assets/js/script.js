@@ -98,44 +98,68 @@ function constrainGame(object) {
 var object = {};
 
 async function playGame() {
-	var randomNumber = Math.floor(Math.random() * 10000);
-	var response = await fetch(
-		'https://jservice.io/api/categories?count=6&offset=' + randomNumber
-	);
-	var data = await response.json();
-	var questionsPull = data;
-	var questionsObject = await organizeData(questionsPull);
+	var questionsObject = {};
+	var potentialNewCategory = await getNewCategory();
+	var duplicatesArray = [];
+	while (Object.keys(questionsObject).length < 6) {
+		var potentialNewCategory = await getNewCategory();
+		if (
+			potentialNewCategory === false ||
+			duplicatesArray.includes(Object.keys(potentialNewCategory)[0])
+		) {
+			console.log('category is false');
+		} else {
+			questionsObject[Object.keys(potentialNewCategory)[0]] = Object.values(
+				potentialNewCategory
+			)[0];
+			duplicatesArray.push(Object.keys(potentialNewCategory)[0]);
+			//here we add the new category to the questionsobject property
+			console.log('category is true');
+		}
+	}
 	console.log('questionsObject :>> ', questionsObject);
-
 	saveSession(questionsObject);
 	// createCategories(Object.getOwnPropertyNames(questionsObject));
 	createCategories(questionsObject);
+
 	audioSound('boardGeneration');
 }
 
-async function organizeData(data) {
-	var allQuestions = {};
-	if (data) {
-		console.log(data);
-		for (let i = 0; i < data.length; i++) {
-			var questionResponse = await getQuestions(data[i].id);
-			allQuestions[data[i].title] = questionResponse;
-
-			var questionBank = {
-				[data[i].title]: questionResponse,
-			};
-		}
-	}
-	console.log('FINAL QUESTION BANK: >> ', allQuestions);
-	return allQuestions;
-}
-
-async function getQuestions(category) {
+async function getNewCategory() {
 	var response = await fetch(
-		'https://jservice.io/api/clues?category=' + category
+		'https://jservice.io/api/category?id=' + Math.floor(Math.random() * 10000)
 	);
 	var data = await response.json();
-	return data;
+	var questionsPull = data;
+	if (questionsPull.clues.length > 5) {
+		console.log('questionsPull.clues unshuffled :>> ', questionsPull.clues);
+		questionsPull.clues = questionsPull.clues
+			.map((a) => ({ sort: Math.random(), value: a }))
+			.sort((a, b) => a.sort - b.sort)
+			.map((a) => a.value);
+		console.log('shuffled :>> ', questionsPull.clues);
+		// shuffle(questionsPull.clues);
+		// console.log('questionsPull.clues :>> ', questionsPull.clues);
+	}
+	var newObjectProperty = await organizeData(questionsPull);
+	console.log('newObjectProperty :>> ', newObjectProperty);
+	if (newObjectProperty === false) {
+		return false;
+	} else {
+		return newObjectProperty;
+	}
+}
+
+async function organizeData(data) {
+	var currentCategoryObject = {};
+	// console.log('data :>> ', data);
+	for (let i = 0; i < 5; i++) {
+		if (!data.clues[i].question || !data.clues[i].answer) {
+			return false;
+		}
+	}
+	currentCategoryObject[data.title] = data.clues;
+	return currentCategoryObject;
 }
 
 //function to create/populate the board
@@ -161,7 +185,10 @@ function createCategories(categoryArray) {
 		catBox.append(catHeadcontainer);
 		catContainer.append(catBox);
 		// console.log(categoryArray)
-		// console.log(Object.values(categoryArray)[i]);
+		console.log(
+			'Object.values(categoryArray[i], i = ' + i + ' =>>',
+			Object.values(categoryArray)[i]
+		);
 		var box1Values = getBoxValues(Object.values(categoryArray)[i], 1);
 		var box2Values = getBoxValues(Object.values(categoryArray)[i], 2);
 		var box3Values = getBoxValues(Object.values(categoryArray)[i], 3);
@@ -213,20 +240,19 @@ function checkAnswer(answerPackage) {
 		}
 		answerToast(answerPackage);
 	} else {
-		answerToast(answerPackage)
+		answerToast(answerPackage);
 	}
-	
 }
 
 function validateSubmissionLength(answer, submission) {
 	if (answer.length > 12) {
-		if (submission.length > (answer.length / 4)) {
+		if (submission.length > answer.length / 4) {
 			return true;
 		} else {
 			return false;
 		}
 	} else {
-		if (submission.length > (answer.length / 2)) {
+		if (submission.length > answer.length / 2) {
 			return true;
 		} else {
 			return false;
@@ -310,7 +336,8 @@ function createQuestions(
 }
 
 //function to create the modal (popup) inside each questionBox
-function createModal(container, id, amount, question, answer) {
+async function createModal(container, id, amount, question, answer) {
+	console.log(container, id, amount, question, answer);
 	var modalFade = document.createElement('div');
 	modalFade.setAttribute('class', 'modal fade');
 	modalFade.setAttribute('id', id);
@@ -333,8 +360,9 @@ function createModal(container, id, amount, question, answer) {
 
 	// store the question here
 	var modalQuestion = document.createElement('h5');
-	modalQuestion.setAttribute('class', 'modal-title');
+	modalQuestion.setAttribute('class', `modal-title modal_${id}`);
 	modalQuestion.setAttribute('id', id);
+	//	modalQuestion.setAttribute('name', `modal_${id}`);
 	modalQuestion.setAttribute('data-answer', answer);
 	modalQuestion.setAttribute('data-value', amount);
 	modalQuestion.innerHTML = question;
@@ -355,7 +383,7 @@ function createModal(container, id, amount, question, answer) {
 
 	var modalPhrase = document.createElement('h5');
 	modalPhrase.setAttribute('id', `phrase_${id}`);
-	defineWord(modalQuestion.getAttribute('data-answer'), `phrase_${id}`);
+	//defineWord(modalQuestion.getAttribute('data-answer'), `phrase_${id}`);
 
 	var modalInput = document.createElement('input');
 	modalInput.setAttribute('type', 'answer');
@@ -411,12 +439,12 @@ function handleFormSubmit(event) {
 //function to handle the clicking of the 'Submit' button inside the modal -- directs to the handleFormSubmit
 function handleButtonClick(event) {
 	event.preventDefault();
-	console.log('buttonClick1 id' + event);
-
+	console.log(event.target.id);
 	if (event.target.id === 'submit') {
 		console.log('button click 2');
 		var answerHome =
 			event.target.parentNode.parentNode.childNodes[0].childNodes[1];
+		console.log(answerHome);
 		answerHandler(answerHome, false);
 		//currently just console logging answer until we can do something
 		// console.log(answerValue);
@@ -431,6 +459,13 @@ function handleButtonClick(event) {
 		audioSound('timesUp');
 	} else if (event.target.id === 'topTitle') {
 		audioSound('theme');
+	} else if (event.target.id === 'questBox') {
+		let clueTarget = $(event.target);
+		let clueName = clueTarget.attr('name');
+		let answerTarget = $(`.modal_${clueName}`);
+		let answerName = answerTarget.attr('data-answer');
+		console.log(answerName);
+		defineWord(answerName, `phrase_${clueName}`);
 	}
 }
 
@@ -569,7 +604,7 @@ checkLocalStorage();
 // start of game here
 // playGame();
 
-function formQuestion(speechPart) {
+async function formQuestion(speechPart) {
 	switch (speechPart.toLowerCase()) {
 		case 'geographical name':
 			return 'Where is ';
@@ -580,39 +615,43 @@ function formQuestion(speechPart) {
 	}
 }
 
-function defineWord(word, id) {
+async function defineWord(word, id) {
+	var findObject = document.getElementById(id);
+	console.log(word, id);
 	let output;
 	const regex = /[%!@#$%^&*()_\-+=/]/gm;
 	if (regex.test(word)) {
 		output = 'What is ';
 		//MAP OUTPUT TO THE QUESTIONS DATA OBJECT
+		if (findObject === null) {
+			return;
+		} else {
+			findObject.innerText = `${output}...`;
+		}
 	} else {
 		let searchUrl =
 			'https://dictionaryapi.com/api/v3/references/collegiate/json/' +
 			word +
 			'?key=0442cdad-ae0d-4b9d-a484-5df8d0b9fc7d';
-		fetch(searchUrl)
-			.then(function (response) {
-				return response.json();
-			})
-			.then(function (data) {
-				if (data && data[0] && data[0].fl) {
-					var formRequest = data[0].fl;
-					output = formQuestion(formRequest);
-				} else {
-					output = 'What is ';
-				}
-				//MAP OUTPUT TO THE QUESTIONS DATA OBJECT. Test
-				var findObject = document.getElementById(id);
-				if (findObject === null) {
-					return;
-				} else {
-					// findObject.setAttribute('placeholder', `${output}...`);
-					findObject.innerText = `${output}...`;
-				}
-			});
+		let response = await fetch(searchUrl);
+		let data = await response.json();
+		if (data && data[0] && data[0].fl) {
+			var formRequest = data[0].fl;
+			console.log(formRequest);
+			output = await formQuestion(formRequest);
+		} else {
+			output = 'What is ';
+		}
+		//MAP OUTPUT TO THE QUESTIONS DATA OBJECT. Test
+		if (findObject === null) {
+			return;
+		} else {
+			findObject.innerText = `${output}...`;
+		}
 	}
 }
+
+var everyQuestionArray = [];
 
 function getBoxValues(category, num) {
 	var box = {};
@@ -651,6 +690,8 @@ function getBoxValues(category, num) {
 			}
 		}
 	}
+	everyQuestionArray.push(box);
+	console.log('everyQuestionArray :>> ', everyQuestionArray);
 	return box;
 }
 
@@ -722,18 +763,21 @@ function getQvalues(
 
 //function to find and play sound
 function audioSound(selection) {
-	if (selection === 'theme') {
-		if (themeSwitch === false) {
+	var mute = document.getElementById('mute');
+	if (mute.getAttribute('data-status') === 'true') {
+		if (selection === 'theme') {
+			if (themeSwitch === false) {
+				var path = 'assets/audio/';
+				var snd = new Audio(path + selection + '.mp3');
+				snd.play();
+				themeSwitch = true;
+			}
+		}
+		if (selection !== 'theme') {
 			var path = 'assets/audio/';
 			var snd = new Audio(path + selection + '.mp3');
 			snd.play();
-			themeSwitch = true;
 		}
-	}
-	if (selection !== 'theme') {
-		var path = 'assets/audio/';
-		var snd = new Audio(path + selection + '.mp3');
-		snd.play();
 	}
 }
 
@@ -764,7 +808,21 @@ function stoptimeBox() {
 	clearInterval(currentTime);
 }
 
+//checks the status of the mute button to toggle on/off
+function muteHandler() {
+	mute = document.getElementById('mute');
+	var currState = document.getElementById('mute');
+	if (currState.getAttribute('data-status') === 'false') {
+		currState.setAttribute('class', 'fas fa-volume-up');
+		currState.setAttribute('data-status', 'true');
+	} else {
+		currState.setAttribute('class', 'fas fa-volume-mute');
+		currState.setAttribute('data-status', 'false');
+	}
+}
+
 //event Listeners
 answerSubmit.addEventListener('submit', handleFormSubmit);
 answerSubmit.addEventListener('click', handleButtonClick);
 titleLink.addEventListener('click', handleButtonClick);
+mute.addEventListener('click', muteHandler);

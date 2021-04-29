@@ -50,8 +50,8 @@ body {
 }
 
 #topBox > h4 {
-	font-size: clamp(8px, 8vw, 24px);
-	margin: 0;
+	font-size: clamp(8px, 8vw, 18px);
+	padding-top: 5px;
 }
 
 #topTitle {
@@ -64,6 +64,10 @@ body {
 		3px 4px 1px gray, 5px 4px 1px black, 4px 5px 1px gray, 6px 5px 1px black,
 		5px 6px 1px gray, 7px 6px 1px black;
 	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+i {
+	text-shadow: 2px 2px 3px black;
 }
 
 #boardContainer {
@@ -157,7 +161,7 @@ a:not([href]):not([tabinex]) {
 	align-items: top;
 	border: 3px solid black;
 	height: 30vh;
-	font-size: clamp(8px, 1rem + 1vw, 32px);
+	font-size: clamp(8px, 1rem, 32px);
 	font-family: 'Roboto', sans-serif;
 }
 
@@ -167,7 +171,7 @@ a:not([href]):not([tabinex]) {
 	min-width: 70%;
 	text-align: left;
 	margin-left: 10px;
-	font-size: clamp(8px, 1rem + 1vw, 32px);
+	font-size: clamp(8px, 1rem, 32px);
 	font-family: 'Roboto', sans-serif;
 }
 
@@ -198,14 +202,15 @@ form {
 	box-shadow: 2px 2px 10px black;
 	height: 80%;
 	align-self: center;
-	font-size: clamp(8px, 1rem + 1vw, 32px);
+	font-size: 2rem;
 	color: white;
 	font-family: 'Nanum Pen Script', cursive;
 }
 
 .form-control::placeholder {
 	color: white;
-	opacity: 1;
+	opacity: 0.5;
+	font-size: clamp(12px, 1.5rem, 32px);
 }
 
 .form-control:focus {
@@ -220,7 +225,7 @@ form {
 }
 
 .modal-footer {
-	justify-content: center;
+	justify-content: space-evenly;
 	height: 100%;
 	border: 3px solid black;
 }
@@ -231,8 +236,9 @@ form {
 	padding: 5px;
 	color: white;
 	text-shadow: 2px 2px 3px black;
-	font-size: clamp(0.75rem, 0.75rem + 2vw, 3rem);
+	font-size: clamp(0.75rem, 0.75rem, 2rem);
 	width: 25vw;
+	max-width: 100px;
 }
 
 .modal-footer .btn:hover {
@@ -243,10 +249,10 @@ form {
 
 #toast {
 	position: fixed;
-	top: 10%;
-	left: 30%;
-	height: 50%;
-	width: 40%;
+	top: 15%;
+	left: 5%;
+	height: 70%;
+	width: 90%;
 	z-index: 1000;
 	font-family: 'Nanum Pen Script', cursive;
 	font-size: clamp(0.75rem, 0.75rem + 2vw, 3rem);
@@ -263,6 +269,7 @@ form {
 	color: red;
 }
 
+/* CSS changes from stacked board to traditional board at 576px */
 @media (min-width: 576px) {
 	#boardContainer {
 		height: 60vh;
@@ -281,19 +288,62 @@ form {
 		padding: 0;
 	}
 
+	#catBox h4 {
+		font-size: clamp(6px, 0.8em, 24px);
+	}
+
 	#catAContainer {
 		height: 80%;
+		flex-direction: column;
 	}
 
 	#questBox {
 		height: 20%;
 	}
+
+	#continue button {
+		width: 40%;
+	}
+	#toast {
+		position: fixed;
+		top: 15%;
+		left: 25vw;
+	}
+}
+
+/* CSS specific button issue at this size */
+@media (max-width: 576px) {
 	#continue button {
 		width: 40%;
 	}
 }
-@media (max-width: 576px) {
-	#continue button {
-		width: 40%;
+
+/* CSS Changes over 768px -- keeping board intact */
+@media (min-width: 768px) {
+	#catAContainer {
+		flex-direction: row;
+	}
+}
+
+/* CSS Changes over 1200px -- mostly positioning */
+@media (min-width: 1200px) {
+	#toast {
+		position: fixed;
+		top: 15%;
+		left: 40%;
+	}
+
+	.modal-content {
+		min-height: auto;
+		min-width: auto;
+		height: 550px;
+		width: 500px;
+	}
+
+	.modal-header {
+		height: 490px;
+	}
+	.modal-footer {
+		height: 72px;
 	}
 }
