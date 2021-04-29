@@ -337,7 +337,7 @@ function createQuestions(
 
 //function to create the modal (popup) inside each questionBox
 async function createModal(container, id, amount, question, answer) {
-	console.log(container, id, amount, question, answer)
+	console.log(container, id, amount, question, answer);
 	var modalFade = document.createElement('div');
 	modalFade.setAttribute('class', 'modal fade');
 	modalFade.setAttribute('id', id);
@@ -362,7 +362,7 @@ async function createModal(container, id, amount, question, answer) {
 	var modalQuestion = document.createElement('h5');
 	modalQuestion.setAttribute('class', `modal-title modal_${id}`);
 	modalQuestion.setAttribute('id', id);
-//	modalQuestion.setAttribute('name', `modal_${id}`);
+	//	modalQuestion.setAttribute('name', `modal_${id}`);
 	modalQuestion.setAttribute('data-answer', answer);
 	modalQuestion.setAttribute('data-value', amount);
 	modalQuestion.innerHTML = question;
@@ -442,8 +442,9 @@ function handleButtonClick(event) {
 	console.log(event.target.id);
 	if (event.target.id === 'submit') {
 		console.log('button click 2');
-		var answerHome = event.target.parentNode.parentNode.childNodes[0].childNodes[1];
-		console.log(answerHome)
+		var answerHome =
+			event.target.parentNode.parentNode.childNodes[0].childNodes[1];
+		console.log(answerHome);
 		answerHandler(answerHome, false);
 		//currently just console logging answer until we can do something
 		// console.log(answerValue);
@@ -464,7 +465,7 @@ function handleButtonClick(event) {
 		let answerTarget = $(`.modal_${clueName}`);
 		let answerName = answerTarget.attr('data-answer');
 		console.log(answerName);
-		defineWord(answerName, `phrase_${clueName}`)
+		defineWord(answerName, `phrase_${clueName}`);
 	}
 }
 
@@ -614,7 +615,7 @@ async function formQuestion(speechPart) {
 	}
 }
 
- async function defineWord(word, id) {
+async function defineWord(word, id) {
 	var findObject = document.getElementById(id);
 	console.log(word, id);
 	let output;
@@ -633,20 +634,20 @@ async function formQuestion(speechPart) {
 			word +
 			'?key=0442cdad-ae0d-4b9d-a484-5df8d0b9fc7d';
 		let response = await fetch(searchUrl);
-			let data = await response.json();
-			if (data && data[0] && data[0].fl) {
-				var formRequest = data[0].fl;
-				console.log(formRequest)
-				output = await formQuestion(formRequest);
-			} else {
-				output = 'What is ';
-			}
-			//MAP OUTPUT TO THE QUESTIONS DATA OBJECT. Test
-			if (findObject === null) {
-				return;
-			} else {
-				findObject.innerText = `${output}...`;
-			}
+		let data = await response.json();
+		if (data && data[0] && data[0].fl) {
+			var formRequest = data[0].fl;
+			console.log(formRequest);
+			output = await formQuestion(formRequest);
+		} else {
+			output = 'What is ';
+		}
+		//MAP OUTPUT TO THE QUESTIONS DATA OBJECT. Test
+		if (findObject === null) {
+			return;
+		} else {
+			findObject.innerText = `${output}...`;
+		}
 	}
 }
 
@@ -762,18 +763,21 @@ function getQvalues(
 
 //function to find and play sound
 function audioSound(selection) {
-	if (selection === 'theme') {
-		if (themeSwitch === false) {
+	var mute = document.getElementById('mute');
+	if (mute.getAttribute('data-status') === 'true') {
+		if (selection === 'theme') {
+			if (themeSwitch === false) {
+				var path = 'assets/audio/';
+				var snd = new Audio(path + selection + '.mp3');
+				snd.play();
+				themeSwitch = true;
+			}
+		}
+		if (selection !== 'theme') {
 			var path = 'assets/audio/';
 			var snd = new Audio(path + selection + '.mp3');
 			snd.play();
-			themeSwitch = true;
 		}
-	}
-	if (selection !== 'theme') {
-		var path = 'assets/audio/';
-		var snd = new Audio(path + selection + '.mp3');
-		snd.play();
 	}
 }
 
@@ -804,11 +808,21 @@ function stoptimeBox() {
 	clearInterval(currentTime);
 }
 
+//checks the status of the mute button to toggle on/off
+function muteHandler() {
+	mute = document.getElementById('mute');
+	var currState = document.getElementById('mute');
+	if (currState.getAttribute('data-status') === 'false') {
+		currState.setAttribute('class', 'fas fa-volume-up');
+		currState.setAttribute('data-status', 'true');
+	} else {
+		currState.setAttribute('class', 'fas fa-volume-mute');
+		currState.setAttribute('data-status', 'false');
+	}
+}
+
 //event Listeners
 answerSubmit.addEventListener('submit', handleFormSubmit);
 answerSubmit.addEventListener('click', handleButtonClick);
 titleLink.addEventListener('click', handleButtonClick);
-
-
-
-//##################################CLEAN START################################
+mute.addEventListener('click', muteHandler);
