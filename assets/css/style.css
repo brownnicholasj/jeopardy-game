@@ -1,3 +1,4 @@
+/* establishing main colors being reused */
 :root {
 	--main-bg-color: #060ce9;
 	--grad-bg-color: #7074e0;
@@ -18,6 +19,8 @@ body {
 	color: white;
 	font-family: 'ZCOOL QingKe HuangYou', cursive;
 }
+
+/* sorted in order used in HTML */
 
 #continue .btn {
 	border: 3px solid black;
@@ -135,6 +138,7 @@ i {
 	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
+/* used to overwrite bootstrap */
 a:not([href]):not([tabinex]) {
 	color: rgb(241, 157, 60);
 }
@@ -145,6 +149,7 @@ a:not([href]):not([tabinex]) {
 	cursor: pointer;
 }
 
+/* modal formatting section */
 .modal-content {
 	background-image: radial-gradient(
 		ellipse,
@@ -175,7 +180,7 @@ a:not([href]):not([tabinex]) {
 	font-family: 'Roboto', sans-serif;
 }
 
-/* display set to none until ready to show */
+/* display set to none until ready to show -- future development */
 .modal-header #modaltimer {
 	display: none;
 	text-align: right;
@@ -247,6 +252,7 @@ form {
 	cursor: pointer;
 }
 
+/* answer review popup */
 #toast {
 	position: fixed;
 	top: 15%;
@@ -269,6 +275,7 @@ form {
 	color: red;
 }
 
+/* game end screen */
 #finalContainer {
 	align-self: center;
 	margin: auto;
