@@ -2,6 +2,7 @@
 var answerSubmit = document.getElementById('boardContainer');
 var titleLink = document.getElementById('topTitle');
 var themeSwitch = false;
+var currentTime;
 
 //Function that gives user the option to reload their last session. The internal code at this point is arbitrary, but I wanted something there for testing the functionality.
 function continueLastGame() {
@@ -14,14 +15,14 @@ function continueLastGame() {
 	let playNew = $('#confirmNew');
 	playSave.on('click', function (event) {
 		event.preventDefault();
-		var currentTime = setInterval(timeBox, 1000);
+		currentTime = setInterval(timeBox, 1000);
 		audioSound('startGame');
 		let questionsObject = recoverSession();
 		createCategories(questionsObject);
 	});
 	playNew.on('click', function (event) {
 		event.preventDefault();
-		var currentTime = setInterval(timeBox, 1000);
+		currentTime = setInterval(timeBox, 1000);
 		audioSound('startGame');
 		playGame();
 	});
@@ -84,13 +85,10 @@ async function playGame() {
 				potentialNewCategory
 			)[0];
 			duplicatesArray.push(Object.keys(potentialNewCategory)[0]);
-			//here we add the new category to the questionsobject property
-			// console.log('category is true');
 		}
 	}
-	// console.log('questionsObject :>> ', questionsObject);
 	saveSession(questionsObject);
-	// createCategories(Object.getOwnPropertyNames(questionsObject));
+
 	createCategories(questionsObject);
 
 	audioSound('boardGeneration');
@@ -98,20 +96,18 @@ async function playGame() {
 
 async function getNewCategory() {
 	var response = await fetch(
-		'https://jservice.io/api/category?id=' + Math.floor(Math.random() * 10000)
+		'https://jservice.io/api/category?id=' + Math.floor(Math.random() * 18000)
 	);
 	var data = await response.json();
 	var questionsPull = data;
 	if (questionsPull.clues.length > 5) {
-		// console.log('questionsPull.clues unshuffled :>> ', questionsPull.clues);
 		questionsPull.clues = questionsPull.clues
 			.map((a) => ({ sort: Math.random(), value: a }))
 			.sort((a, b) => a.sort - b.sort)
 			.map((a) => a.value);
-		// console.log('shuffled :>> ', questionsPull.clues);
 	}
 	var newObjectProperty = await organizeData(questionsPull);
-	// console.log('newObjectProperty :>> ', newObjectProperty);
+
 	if (newObjectProperty === false) {
 		return false;
 	} else {
@@ -121,7 +117,6 @@ async function getNewCategory() {
 
 async function organizeData(data) {
 	var currentCategoryObject = {};
-	// console.log('data :>> ', data);
 	for (let i = 0; i < 5; i++) {
 		if (!data.clues[i].question || !data.clues[i].answer) {
 			return false;
@@ -153,20 +148,12 @@ function createCategories(categoryArray) {
 		catHeadcontainer.append(catHead);
 		catBox.append(catHeadcontainer);
 		catContainer.append(catBox);
-		// console.log(categoryArray)
-		// console.log(
-		// 	'Object.values(categoryArray[i], i = ' + i + ' =>>',
-		// 	Object.values(categoryArray)[i]
-		// );
+
 		var box1Values = getBoxValues(Object.values(categoryArray)[i], 1);
 		var box2Values = getBoxValues(Object.values(categoryArray)[i], 2);
 		var box3Values = getBoxValues(Object.values(categoryArray)[i], 3);
 		var box4Values = getBoxValues(Object.values(categoryArray)[i], 4);
 		var box5Values = getBoxValues(Object.values(categoryArray)[i], 5);
-		// console.log(box2Values);
-		// console.log(box3Values);
-		// console.log(box4Values);
-		// console.log(box5Values);
 
 		createQuestions(
 			catContainer,
@@ -183,7 +170,6 @@ function createCategories(categoryArray) {
 }
 //BEGIN CHECK ANSWER ADJUSTMENT.
 function checkAnswer(answerPackage) {
-	// console.log(answerPackage);
 	let answer = answerPackage[0].toLowerCase();
 	if (!answerPackage[3]) {
 		if (answerPackage[1]) {
@@ -426,11 +412,13 @@ function handleButtonClick(event) {
 		// console.log(answerName);
 		defineWord(answerName, `phrase_${clueName}`);
 	}
+	if (event.target.id === 'endButton') {
+		location.reload();
+	}
 }
 
 //
 function answerHandler(event, boolean) {
-	// console.log(event.getAttribute('id'));
 	let answerSelector = event.getAttribute('id');
 	let correctSelector = event.getAttribute('data-answer');
 	let userSubmission = $(`#floatingInput_${answerSelector}`).val();
@@ -444,12 +432,6 @@ function answerHandler(event, boolean) {
 }
 
 function answerToast(package) {
-	// console.log(package);
-	// console.log(`answer (from Jservice):` + package[0]);
-	// console.log(`answer (from user):` + package[1]);
-	// console.log(`value:` + package[2]);
-	// console.log('correct?:' + package[4]);
-
 	var toast = document.createElement('div');
 	var tHeader = document.createElement('div');
 	var solve = document.createElement('strong');
@@ -512,8 +494,10 @@ function removeCatSquare(event) {
 	var findBox = document.getElementsByName(logId);
 	findBox[0].innerHTML = '';
 	findBox[0].removeAttribute('data-bs-toggle');
+	findBox[0].setAttribute('done', true);
 	var findModal = document.getElementById(logId);
 	findModal.remove();
+	endGame();
 }
 
 //function to sum score from each question after answered
@@ -530,13 +514,6 @@ function scoreTally(answer, value) {
 	}
 	saveScore();
 }
-
-// simulation for score updating
-// scoreTally(true, 100);
-// scoreTally(true, 200);
-// scoreTally(true, 300);
-// scoreTally(true, 400);
-// // scoreTally(false, 500);
 
 function saveScore() {
 	// console.log('save score start');
@@ -560,12 +537,11 @@ async function formQuestion(speechPart) {
 
 async function defineWord(word, id) {
 	var findObject = document.getElementById(id);
-	// console.log(word, id);
 	let output;
 	const regex = /[%!@#$%^&*()_\-+=/]/gm;
 	if (regex.test(word)) {
 		output = 'What is ';
-		//MAP OUTPUT TO THE QUESTIONS DATA OBJECT
+
 		if (findObject === null) {
 			return;
 		} else {
@@ -585,7 +561,6 @@ async function defineWord(word, id) {
 		} else {
 			output = 'What is ';
 		}
-		//MAP OUTPUT TO THE QUESTIONS DATA OBJECT. Test
 		if (findObject === null) {
 			return;
 		} else {
@@ -600,33 +575,27 @@ function getBoxValues(category, num) {
 	var box = {};
 	for (i = 0; i < 5; i++) {
 		if (typeof box === 'object' && box) {
-			// console.log('box 1 statement 1 true');
 			if (num === 1) {
-				// console.log('100 value here');
 				box.value = 100;
 				box.question = category[num - 1].question;
 				box.answer = category[num - 1].answer;
 			}
 			if (num === 2) {
-				// console.log('100 value here');
 				box.value = 200;
 				box.question = category[num - 1].question;
 				box.answer = category[num - 1].answer;
 			}
 			if (num === 3) {
-				// console.log('100 value here');
 				box.value = 300;
 				box.question = category[num - 1].question;
 				box.answer = category[num - 1].answer;
 			}
 			if (num === 4) {
-				// console.log('100 value here');
 				box.value = 400;
 				box.question = category[num - 1].question;
 				box.answer = category[num - 1].answer;
 			}
 			if (num === 5) {
-				// console.log('100 value here');
 				box.value = 500;
 				box.question = category[num - 1].question;
 				box.answer = category[num - 1].answer;
@@ -634,7 +603,7 @@ function getBoxValues(category, num) {
 		}
 	}
 	everyQuestionArray.push(box);
-	// console.log('everyQuestionArray :>> ', everyQuestionArray);
+
 	return box;
 }
 
@@ -725,14 +694,14 @@ function audioSound(selection) {
 }
 
 function timeBox() {
-	roundTime = document.getElementById('timeBox').getAttribute('data-time');
+	var roundTime = document.getElementById('timeBox').getAttribute('data-time');
 	if (roundTime === '' || roundTime === null) {
 		roundTime = 900;
 	} else {
 		roundTime--;
 	}
 	if (roundTime === 0) {
-		stoptimeBox();
+		clearInterval(currentTime);
 	}
 	var minute = Math.floor(roundTime / 60);
 	var second = roundTime - minute * 60;
@@ -745,10 +714,9 @@ function timeBox() {
 	var timerLog = `${minute}:${second}`;
 	document.getElementById('timeBox').innerText = timerLog;
 	document.getElementById('timeBox').setAttribute('data-time', roundTime);
-}
-
-function stoptimeBox() {
-	clearInterval(currentTime);
+	if (document.getElementById('timeBox').getAttribute('data-time') == 0) {
+		endGame();
+	}
 }
 
 //checks the status of the mute button to toggle on/off
@@ -762,6 +730,40 @@ function muteHandler() {
 		currState.setAttribute('class', 'fas fa-volume-mute');
 		currState.setAttribute('data-status', 'false');
 	}
+}
+
+function endGame() {
+	console.log('start endGame');
+	var boxFind = document.querySelectorAll('#questBox[done]');
+	if (boxFind.length == '30') {
+		console.log(boxFind.length);
+		finalScreen();
+	}
+	var timerFind = document.getElementById('timeBox').getAttribute('data-time');
+	console.log(timerFind);
+	if (timerFind == 0) {
+		console.log('end the game');
+		finalScreen();
+	}
+}
+
+function finalScreen() {
+	console.log('FINAL SCREEN HERE');
+	answerSubmit.innerHTML = '';
+
+	var div = document.createElement('div');
+	div.setAttribute('id', 'finalContainer');
+	var text = document.createElement('h1');
+	var currentScore = document.getElementById('scoreBox').innerText;
+	text.setAttribute('id', 'endGame');
+	text.innerHTML = `The game has ended <br> your score is $${currentScore}`;
+	div.append(text);
+
+	var restart = document.createElement('button');
+	restart.setAttribute('id', 'endButton');
+	restart.innerHTML = 'Restart';
+	div.append(restart);
+	answerSubmit.append(div);
 }
 
 //event Listeners
