@@ -48,6 +48,8 @@ function checkLocalStorage() {
 	if (localStorage.getItem('currentSession')) {
 		continueLastGame();
 	} else {
+		var currentTime = setInterval(timeBox, 1000);
+		audioSound('startGame');
 		playGame();
 	}
 }
@@ -60,37 +62,6 @@ function recoverSession() {
 // This function can be called to save the current game session.
 function saveSession(object) {
 	localStorage.setItem('currentSession', JSON.stringify(object));
-}
-//GAME CONSTRAINT DEVELOPMENT
-//	This function should more accurately generate a round of jeopardy with increased clue/value integrity.
-function constrainGame(object) {
-	console.log(object);
-	let keys = Object.keys(object);
-	let subKeys = Object.keys(object[keys[0]]);
-	let botKeys = Object.keys(object[keys[subKeys[0]]]);
-	console.log(keys);
-	console.log(subKeys);
-	console.log(botKeys);
-	for (let i = 0; i < keys.length; i++) {
-		for (let j = 0; j < object[keys[i]].length; j++) {
-			delete object[keys[i]][j].id;
-			delete object[keys[i]][j].airdate;
-			delete object[keys[i]][j].category;
-			delete object[keys[i]][j].category_id;
-			delete object[keys[i]][j].created_at;
-			delete object[keys[i]][j].game_id;
-			delete object[keys[i]][j].invalid_count;
-			delete object[keys[i]][j].updated_at;
-			if (object[keys[i]][j].value == 1000 || 800 || 600) {
-				object[keys[i]][j].value = object[keys[i]][j].value / 2;
-			}
-			if (object[keys[i]][j].value == 1000 || 800 || 600) {
-				object[keys[i]][j].value = object[keys[i]][j].value / 2;
-			}
-		}
-	}
-
-	console.log(object);
 }
 
 //************************************************************ Functions to get JService DATA ********* */
@@ -107,17 +78,17 @@ async function playGame() {
 			potentialNewCategory === false ||
 			duplicatesArray.includes(Object.keys(potentialNewCategory)[0])
 		) {
-			console.log('category is false');
+			// console.log('category is false');
 		} else {
 			questionsObject[Object.keys(potentialNewCategory)[0]] = Object.values(
 				potentialNewCategory
 			)[0];
 			duplicatesArray.push(Object.keys(potentialNewCategory)[0]);
 			//here we add the new category to the questionsobject property
-			console.log('category is true');
+			// console.log('category is true');
 		}
 	}
-	console.log('questionsObject :>> ', questionsObject);
+	// console.log('questionsObject :>> ', questionsObject);
 	saveSession(questionsObject);
 	// createCategories(Object.getOwnPropertyNames(questionsObject));
 	createCategories(questionsObject);
@@ -132,17 +103,15 @@ async function getNewCategory() {
 	var data = await response.json();
 	var questionsPull = data;
 	if (questionsPull.clues.length > 5) {
-		console.log('questionsPull.clues unshuffled :>> ', questionsPull.clues);
+		// console.log('questionsPull.clues unshuffled :>> ', questionsPull.clues);
 		questionsPull.clues = questionsPull.clues
 			.map((a) => ({ sort: Math.random(), value: a }))
 			.sort((a, b) => a.sort - b.sort)
 			.map((a) => a.value);
-		console.log('shuffled :>> ', questionsPull.clues);
-		// shuffle(questionsPull.clues);
-		// console.log('questionsPull.clues :>> ', questionsPull.clues);
+		// console.log('shuffled :>> ', questionsPull.clues);
 	}
 	var newObjectProperty = await organizeData(questionsPull);
-	console.log('newObjectProperty :>> ', newObjectProperty);
+	// console.log('newObjectProperty :>> ', newObjectProperty);
 	if (newObjectProperty === false) {
 		return false;
 	} else {
@@ -185,10 +154,10 @@ function createCategories(categoryArray) {
 		catBox.append(catHeadcontainer);
 		catContainer.append(catBox);
 		// console.log(categoryArray)
-		console.log(
-			'Object.values(categoryArray[i], i = ' + i + ' =>>',
-			Object.values(categoryArray)[i]
-		);
+		// console.log(
+		// 	'Object.values(categoryArray[i], i = ' + i + ' =>>',
+		// 	Object.values(categoryArray)[i]
+		// );
 		var box1Values = getBoxValues(Object.values(categoryArray)[i], 1);
 		var box2Values = getBoxValues(Object.values(categoryArray)[i], 2);
 		var box3Values = getBoxValues(Object.values(categoryArray)[i], 3);
@@ -214,7 +183,7 @@ function createCategories(categoryArray) {
 }
 //BEGIN CHECK ANSWER ADJUSTMENT.
 function checkAnswer(answerPackage) {
-	console.log(answerPackage);
+	// console.log(answerPackage);
 	let answer = answerPackage[0].toLowerCase();
 	if (!answerPackage[3]) {
 		if (answerPackage[1]) {
@@ -285,19 +254,10 @@ function createQuestions(
 		questBox.setAttribute('class', 'col col-md-12');
 		questBox.setAttribute('id', 'questBox');
 		questBox.setAttribute('name', questId);
-		// var questHead = document.createElement('button');
 		// establish value [should pull or match to API]
 		var questValue = Math.imul(categoryQuestions[i], 100);
-		// questHead.innerHTML = '$' + questValue;
-		// questHead.setAttribute('type', 'button');
-		// questHead.setAttribute('class', 'btn');
-		// questHead.setAttribute('data-bs-toggle', 'modal');
-		// var categoryFinder =
-		// 	container.children[0].children[0].children[0].textContent;
-		// questHead.setAttribute('data-bs-target', `#${questId}`);
 		questBox.setAttribute('data-bs-toggle', 'modal');
 		questBox.setAttribute('data-bs-target', `#${questId}`);
-		// questBox.append(questHead);
 		questBox.innerHTML = `$${questValue}`;
 		catAContainer.append(questBox);
 		// console.log(questBox);
@@ -337,7 +297,7 @@ function createQuestions(
 
 //function to create the modal (popup) inside each questionBox
 async function createModal(container, id, amount, question, answer) {
-	console.log(container, id, amount, question, answer);
+	// console.log(container, id, amount, question, answer);
 	var modalFade = document.createElement('div');
 	modalFade.setAttribute('class', 'modal fade');
 	modalFade.setAttribute('id', id);
@@ -383,7 +343,6 @@ async function createModal(container, id, amount, question, answer) {
 
 	var modalPhrase = document.createElement('h5');
 	modalPhrase.setAttribute('id', `phrase_${id}`);
-	//defineWord(modalQuestion.getAttribute('data-answer'), `phrase_${id}`);
 
 	var modalInput = document.createElement('input');
 	modalInput.setAttribute('type', 'answer');
@@ -439,12 +398,12 @@ function handleFormSubmit(event) {
 //function to handle the clicking of the 'Submit' button inside the modal -- directs to the handleFormSubmit
 function handleButtonClick(event) {
 	event.preventDefault();
-	console.log(event.target.id);
+	// console.log(event.target.id);
 	if (event.target.id === 'submit') {
-		console.log('button click 2');
+		// console.log('button click 2');
 		var answerHome =
 			event.target.parentNode.parentNode.childNodes[0].childNodes[1];
-		console.log(answerHome);
+		// console.log(answerHome);
 		answerHandler(answerHome, false);
 		//currently just console logging answer until we can do something
 		// console.log(answerValue);
@@ -464,14 +423,14 @@ function handleButtonClick(event) {
 		let clueName = clueTarget.attr('name');
 		let answerTarget = $(`.modal_${clueName}`);
 		let answerName = answerTarget.attr('data-answer');
-		console.log(answerName);
+		// console.log(answerName);
 		defineWord(answerName, `phrase_${clueName}`);
 	}
 }
 
 //
 function answerHandler(event, boolean) {
-	console.log(event.getAttribute('id'));
+	// console.log(event.getAttribute('id'));
 	let answerSelector = event.getAttribute('id');
 	let correctSelector = event.getAttribute('data-answer');
 	let userSubmission = $(`#floatingInput_${answerSelector}`).val();
@@ -485,11 +444,11 @@ function answerHandler(event, boolean) {
 }
 
 function answerToast(package) {
-	console.log(package);
-	console.log(`answer (from Jservice):` + package[0]);
-	console.log(`answer (from user):` + package[1]);
-	console.log(`value:` + package[2]);
-	console.log('correct?:' + package[4]);
+	// console.log(package);
+	// console.log(`answer (from Jservice):` + package[0]);
+	// console.log(`answer (from user):` + package[1]);
+	// console.log(`value:` + package[2]);
+	// console.log('correct?:' + package[4]);
 
 	var toast = document.createElement('div');
 	var tHeader = document.createElement('div');
@@ -531,28 +490,17 @@ function answerToast(package) {
 	tHeader.append(value);
 
 	toast.setAttribute('class', 'toast');
+	toast.setAttribute('data-bs-delay', 2000);
 	toast.setAttribute('role', 'alert');
 	toast.setAttribute('aria-live', 'assertive');
 	toast.setAttribute('aria-atomic', 'true');
 	toast.setAttribute('id', 'toast');
-	toast.setAttribute('data-autohide', 'false');
+	// toast.setAttribute('data-autohide', 'false');
 	toast.append(tHeader);
 	toast.append(body);
 
 	mainBody = document.getElementById('boardContainer');
 	mainBody.append(toast);
-
-	// 	<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-	//   <div class="toast-header">
-	//     <img src="..." class="rounded me-2" alt="...">
-	//     <strong class="me-auto">Bootstrap</strong>
-	//     <small>11 mins ago</small>
-	//     <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-	//   </div>
-	//   <div class="toast-body">
-	//     Hello, world! This is a toast message.
-	//   </div>
-	// </div>
 }
 
 function showToast() {
@@ -591,18 +539,13 @@ function scoreTally(answer, value) {
 // // scoreTally(false, 500);
 
 function saveScore() {
-	console.log('save score start');
+	// console.log('save score start');
 	var totalScore = document.getElementById('scoreBox');
 	var currentScore = Number(totalScore.textContent);
 	localStorage.setItem('currentScore', JSON.stringify(currentScore));
 }
 
-//callNewQuestions();
 checkLocalStorage();
-//generate board -- goes through checkLocalStorage();
-// createCategories();
-// start of game here
-// playGame();
 
 async function formQuestion(speechPart) {
 	switch (speechPart.toLowerCase()) {
@@ -617,7 +560,7 @@ async function formQuestion(speechPart) {
 
 async function defineWord(word, id) {
 	var findObject = document.getElementById(id);
-	console.log(word, id);
+	// console.log(word, id);
 	let output;
 	const regex = /[%!@#$%^&*()_\-+=/]/gm;
 	if (regex.test(word)) {
@@ -637,7 +580,7 @@ async function defineWord(word, id) {
 		let data = await response.json();
 		if (data && data[0] && data[0].fl) {
 			var formRequest = data[0].fl;
-			console.log(formRequest);
+			// console.log(formRequest);
 			output = await formQuestion(formRequest);
 		} else {
 			output = 'What is ';
@@ -691,7 +634,7 @@ function getBoxValues(category, num) {
 		}
 	}
 	everyQuestionArray.push(box);
-	console.log('everyQuestionArray :>> ', everyQuestionArray);
+	// console.log('everyQuestionArray :>> ', everyQuestionArray);
 	return box;
 }
 
