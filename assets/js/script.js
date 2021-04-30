@@ -85,13 +85,10 @@ async function playGame() {
 				potentialNewCategory
 			)[0];
 			duplicatesArray.push(Object.keys(potentialNewCategory)[0]);
-			//here we add the new category to the questionsobject property
-			// console.log('category is true');
 		}
 	}
-	// console.log('questionsObject :>> ', questionsObject);
 	saveSession(questionsObject);
-	// createCategories(Object.getOwnPropertyNames(questionsObject));
+
 	createCategories(questionsObject);
 
 	audioSound('boardGeneration');
@@ -99,20 +96,18 @@ async function playGame() {
 
 async function getNewCategory() {
 	var response = await fetch(
-		'https://jservice.io/api/category?id=' + Math.floor(Math.random() * 10000)
+		'https://jservice.io/api/category?id=' + Math.floor(Math.random() * 18000)
 	);
 	var data = await response.json();
 	var questionsPull = data;
 	if (questionsPull.clues.length > 5) {
-		// console.log('questionsPull.clues unshuffled :>> ', questionsPull.clues);
 		questionsPull.clues = questionsPull.clues
 			.map((a) => ({ sort: Math.random(), value: a }))
 			.sort((a, b) => a.sort - b.sort)
 			.map((a) => a.value);
-		// console.log('shuffled :>> ', questionsPull.clues);
 	}
 	var newObjectProperty = await organizeData(questionsPull);
-	// console.log('newObjectProperty :>> ', newObjectProperty);
+
 	if (newObjectProperty === false) {
 		return false;
 	} else {
