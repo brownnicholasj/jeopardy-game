@@ -39,8 +39,6 @@ function loadQuestionSpace(choice) {
 		$('#testdiv').empty();
 		$('#testdiv').append('<h1>SAVED GAME</h1>');
 		sessionQuestions = JSON.parse(localStorage.getItem('currentSession'));
-		//pull saved score too?
-		//sessionScore = JSON.parse(localStorage.getItem('currentScore'));
 	}
 }
 
@@ -79,7 +77,6 @@ async function playGame() {
 			potentialNewCategory === false ||
 			duplicatesArray.includes(Object.keys(potentialNewCategory)[0])
 		) {
-			// console.log('category is false');
 		} else {
 			questionsObject[Object.keys(potentialNewCategory)[0]] = Object.values(
 				potentialNewCategory
@@ -168,6 +165,7 @@ function createCategories(categoryArray) {
 		boardContainer.append(catContainer);
 	}
 }
+
 //BEGIN CHECK ANSWER ADJUSTMENT.
 function checkAnswer(answerPackage) {
 	let answer = answerPackage[0].toLowerCase();
@@ -246,7 +244,6 @@ function createQuestions(
 		questBox.setAttribute('data-bs-target', `#${questId}`);
 		questBox.innerHTML = `$${questValue}`;
 		catAContainer.append(questBox);
-		// console.log(questBox);
 
 		var amount = getQvalues(
 			boxCount,
@@ -283,7 +280,6 @@ function createQuestions(
 
 //function to create the modal (popup) inside each questionBox
 async function createModal(container, id, amount, question, answer) {
-	// console.log(container, id, amount, question, answer);
 	var modalFade = document.createElement('div');
 	modalFade.setAttribute('class', 'modal fade');
 	modalFade.setAttribute('id', id);
@@ -384,15 +380,13 @@ function handleFormSubmit(event) {
 //function to handle the clicking of the 'Submit' button inside the modal -- directs to the handleFormSubmit
 function handleButtonClick(event) {
 	event.preventDefault();
-	// console.log(event.target.id);
+
 	if (event.target.id === 'submit') {
-		// console.log('button click 2');
 		var answerHome =
 			event.target.parentNode.parentNode.childNodes[0].childNodes[1];
-		// console.log(answerHome);
+
 		answerHandler(answerHome, false);
-		//currently just console logging answer until we can do something
-		// console.log(answerValue);
+
 		removeCatSquare(event.target);
 		showToast();
 	} else if (event.target.id === 'pass') {
@@ -409,7 +403,7 @@ function handleButtonClick(event) {
 		let clueName = clueTarget.attr('name');
 		let answerTarget = $(`.modal_${clueName}`);
 		let answerName = answerTarget.attr('data-answer');
-		// console.log(answerName);
+
 		defineWord(answerName, `phrase_${clueName}`);
 	}
 	if (event.target.id === 'endButton') {
@@ -417,7 +411,6 @@ function handleButtonClick(event) {
 	}
 }
 
-//
 function answerHandler(event, boolean) {
 	let answerSelector = event.getAttribute('id');
 	let correctSelector = event.getAttribute('data-answer');
@@ -516,7 +509,6 @@ function scoreTally(answer, value) {
 }
 
 function saveScore() {
-	// console.log('save score start');
 	var totalScore = document.getElementById('scoreBox');
 	var currentScore = Number(totalScore.textContent);
 	localStorage.setItem('currentScore', JSON.stringify(currentScore));
@@ -556,7 +548,7 @@ async function defineWord(word, id) {
 		let data = await response.json();
 		if (data && data[0] && data[0].fl) {
 			var formRequest = data[0].fl;
-			// console.log(formRequest);
+
 			output = await formQuestion(formRequest);
 		} else {
 			output = 'What is ';
@@ -681,6 +673,8 @@ function audioSound(selection) {
 			if (themeSwitch === false) {
 				var path = 'assets/audio/';
 				var snd = new Audio(path + selection + '.mp3');
+				snd.setAttribute('id', 'audio');
+				answerSubmit.append(snd);
 				snd.play();
 				themeSwitch = true;
 			}
@@ -721,7 +715,12 @@ function timeBox() {
 
 //checks the status of the mute button to toggle on/off
 function muteHandler() {
-	mute = document.getElementById('mute');
+	var audio = document.getElementById('audio');
+	if (audio !== null) {
+		audio.muted = true;
+	}
+
+	var mute = document.getElementById('mute');
 	var currState = document.getElementById('mute');
 	if (currState.getAttribute('data-status') === 'false') {
 		currState.setAttribute('class', 'fas fa-volume-up');
@@ -733,22 +732,17 @@ function muteHandler() {
 }
 
 function endGame() {
-	console.log('start endGame');
 	var boxFind = document.querySelectorAll('#questBox[done]');
 	if (boxFind.length == '30') {
-		console.log(boxFind.length);
 		finalScreen();
 	}
 	var timerFind = document.getElementById('timeBox').getAttribute('data-time');
-	console.log(timerFind);
 	if (timerFind == 0) {
-		console.log('end the game');
 		finalScreen();
 	}
 }
 
 function finalScreen() {
-	console.log('FINAL SCREEN HERE');
 	answerSubmit.innerHTML = '';
 
 	var div = document.createElement('div');
