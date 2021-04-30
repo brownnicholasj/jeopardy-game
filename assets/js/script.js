@@ -122,7 +122,6 @@ async function getNewCategory() {
 
 async function organizeData(data) {
 	var currentCategoryObject = {};
-	// console.log('data :>> ', data);
 	for (let i = 0; i < 5; i++) {
 		if (!data.clues[i].question || !data.clues[i].answer) {
 			return false;
@@ -154,20 +153,12 @@ function createCategories(categoryArray) {
 		catHeadcontainer.append(catHead);
 		catBox.append(catHeadcontainer);
 		catContainer.append(catBox);
-		// console.log(categoryArray)
-		// console.log(
-		// 	'Object.values(categoryArray[i], i = ' + i + ' =>>',
-		// 	Object.values(categoryArray)[i]
-		// );
+
 		var box1Values = getBoxValues(Object.values(categoryArray)[i], 1);
 		var box2Values = getBoxValues(Object.values(categoryArray)[i], 2);
 		var box3Values = getBoxValues(Object.values(categoryArray)[i], 3);
 		var box4Values = getBoxValues(Object.values(categoryArray)[i], 4);
 		var box5Values = getBoxValues(Object.values(categoryArray)[i], 5);
-		// console.log(box2Values);
-		// console.log(box3Values);
-		// console.log(box4Values);
-		// console.log(box5Values);
 
 		createQuestions(
 			catContainer,
@@ -184,7 +175,6 @@ function createCategories(categoryArray) {
 }
 //BEGIN CHECK ANSWER ADJUSTMENT.
 function checkAnswer(answerPackage) {
-	// console.log(answerPackage);
 	let answer = answerPackage[0].toLowerCase();
 	if (!answerPackage[3]) {
 		if (answerPackage[1]) {
@@ -434,7 +424,6 @@ function handleButtonClick(event) {
 
 //
 function answerHandler(event, boolean) {
-	// console.log(event.getAttribute('id'));
 	let answerSelector = event.getAttribute('id');
 	let correctSelector = event.getAttribute('data-answer');
 	let userSubmission = $(`#floatingInput_${answerSelector}`).val();
@@ -448,12 +437,6 @@ function answerHandler(event, boolean) {
 }
 
 function answerToast(package) {
-	// console.log(package);
-	// console.log(`answer (from Jservice):` + package[0]);
-	// console.log(`answer (from user):` + package[1]);
-	// console.log(`value:` + package[2]);
-	// console.log('correct?:' + package[4]);
-
 	var toast = document.createElement('div');
 	var tHeader = document.createElement('div');
 	var solve = document.createElement('strong');
@@ -537,13 +520,6 @@ function scoreTally(answer, value) {
 	saveScore();
 }
 
-// simulation for score updating
-// scoreTally(true, 100);
-// scoreTally(true, 200);
-// scoreTally(true, 300);
-// scoreTally(true, 400);
-// // scoreTally(false, 500);
-
 function saveScore() {
 	// console.log('save score start');
 	var totalScore = document.getElementById('scoreBox');
@@ -566,12 +542,11 @@ async function formQuestion(speechPart) {
 
 async function defineWord(word, id) {
 	var findObject = document.getElementById(id);
-	// console.log(word, id);
 	let output;
 	const regex = /[%!@#$%^&*()_\-+=/]/gm;
 	if (regex.test(word)) {
 		output = 'What is ';
-		//MAP OUTPUT TO THE QUESTIONS DATA OBJECT
+
 		if (findObject === null) {
 			return;
 		} else {
@@ -591,7 +566,6 @@ async function defineWord(word, id) {
 		} else {
 			output = 'What is ';
 		}
-		//MAP OUTPUT TO THE QUESTIONS DATA OBJECT. Test
 		if (findObject === null) {
 			return;
 		} else {
@@ -606,33 +580,27 @@ function getBoxValues(category, num) {
 	var box = {};
 	for (i = 0; i < 5; i++) {
 		if (typeof box === 'object' && box) {
-			// console.log('box 1 statement 1 true');
 			if (num === 1) {
-				// console.log('100 value here');
 				box.value = 100;
 				box.question = category[num - 1].question;
 				box.answer = category[num - 1].answer;
 			}
 			if (num === 2) {
-				// console.log('100 value here');
 				box.value = 200;
 				box.question = category[num - 1].question;
 				box.answer = category[num - 1].answer;
 			}
 			if (num === 3) {
-				// console.log('100 value here');
 				box.value = 300;
 				box.question = category[num - 1].question;
 				box.answer = category[num - 1].answer;
 			}
 			if (num === 4) {
-				// console.log('100 value here');
 				box.value = 400;
 				box.question = category[num - 1].question;
 				box.answer = category[num - 1].answer;
 			}
 			if (num === 5) {
-				// console.log('100 value here');
 				box.value = 500;
 				box.question = category[num - 1].question;
 				box.answer = category[num - 1].answer;
@@ -640,7 +608,7 @@ function getBoxValues(category, num) {
 		}
 	}
 	everyQuestionArray.push(box);
-	// console.log('everyQuestionArray :>> ', everyQuestionArray);
+
 	return box;
 }
 
