@@ -2,6 +2,7 @@
 var answerSubmit = document.getElementById('boardContainer');
 var titleLink = document.getElementById('topTitle');
 var themeSwitch = false;
+var currentTime;
 
 //Function that gives user the option to reload their last session. The internal code at this point is arbitrary, but I wanted something there for testing the functionality.
 function continueLastGame() {
@@ -14,14 +15,14 @@ function continueLastGame() {
 	let playNew = $('#confirmNew');
 	playSave.on('click', function (event) {
 		event.preventDefault();
-		var currentTime = setInterval(timeBox, 1000);
+		currentTime = setInterval(timeBox, 1000);
 		audioSound('startGame');
 		let questionsObject = recoverSession();
 		createCategories(questionsObject);
 	});
 	playNew.on('click', function (event) {
 		event.preventDefault();
-		var currentTime = setInterval(timeBox, 1000);
+		currentTime = setInterval(timeBox, 1000);
 		audioSound('startGame');
 		playGame();
 	});
@@ -467,6 +468,9 @@ function handleButtonClick(event) {
 		console.log(answerName);
 		defineWord(answerName, `phrase_${clueName}`);
 	}
+	if (event.target.id === 'endButton') {
+		location.reload();
+	}
 }
 
 //
@@ -564,8 +568,10 @@ function removeCatSquare(event) {
 	var findBox = document.getElementsByName(logId);
 	findBox[0].innerHTML = '';
 	findBox[0].removeAttribute('data-bs-toggle');
+	findBox[0].setAttribute('done', true);
 	var findModal = document.getElementById(logId);
 	findModal.remove();
+	endGame();
 }
 
 //function to sum score from each question after answered
@@ -782,14 +788,14 @@ function audioSound(selection) {
 }
 
 function timeBox() {
-	roundTime = document.getElementById('timeBox').getAttribute('data-time');
+	var roundTime = document.getElementById('timeBox').getAttribute('data-time');
 	if (roundTime === '' || roundTime === null) {
 		roundTime = 900;
 	} else {
 		roundTime--;
 	}
 	if (roundTime === 0) {
-		stoptimeBox();
+		clearInterval(currentTime);
 	}
 	var minute = Math.floor(roundTime / 60);
 	var second = roundTime - minute * 60;
@@ -802,10 +808,9 @@ function timeBox() {
 	var timerLog = `${minute}:${second}`;
 	document.getElementById('timeBox').innerText = timerLog;
 	document.getElementById('timeBox').setAttribute('data-time', roundTime);
-}
-
-function stoptimeBox() {
-	clearInterval(currentTime);
+	if (document.getElementById('timeBox').getAttribute('data-time') == 0) {
+		endGame();
+	}
 }
 
 //checks the status of the mute button to toggle on/off
@@ -819,6 +824,40 @@ function muteHandler() {
 		currState.setAttribute('class', 'fas fa-volume-mute');
 		currState.setAttribute('data-status', 'false');
 	}
+}
+
+function endGame() {
+	console.log('start endGame');
+	var boxFind = document.querySelectorAll('#questBox[done]');
+	if (boxFind.length == '30') {
+		console.log(boxFind.length);
+		finalScreen();
+	}
+	var timerFind = document.getElementById('timeBox').getAttribute('data-time');
+	console.log(timerFind);
+	if (timerFind == 0) {
+		console.log('end the game');
+		finalScreen();
+	}
+}
+
+function finalScreen() {
+	console.log('FINAL SCREEN HERE');
+	answerSubmit.innerHTML = '';
+
+	var div = document.createElement('div');
+	div.setAttribute('id', 'finalContainer');
+	var text = document.createElement('h1');
+	var currentScore = document.getElementById('scoreBox').innerText;
+	text.setAttribute('id', 'endGame');
+	text.innerHTML = `The game has ended <br> your score is $${currentScore}`;
+	div.append(text);
+
+	var restart = document.createElement('button');
+	restart.setAttribute('id', 'endButton');
+	restart.innerHTML = 'Restart';
+	div.append(restart);
+	answerSubmit.append(div);
 }
 
 //event Listeners
