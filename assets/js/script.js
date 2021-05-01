@@ -115,7 +115,7 @@ async function getNewCategory() {
 
 async function organizeData(data) {
 	var currentCategoryObject = {};
-	for (let i = 0; i < currentCategoryObject.length; i++) {
+	for (let i = 0; i < 5; i++) {
 		if (!data.clues[i].question || !data.clues[i].answer) {
 			return false;
 		}
