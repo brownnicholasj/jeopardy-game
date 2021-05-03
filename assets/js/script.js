@@ -47,7 +47,7 @@ function checkLocalStorage() {
 	if (localStorage.getItem('currentSession')) {
 		continueLastGame();
 	} else {
-		var currentTime = setInterval(timeBox, 1000);
+		// var currentTime = setInterval(timeBox, 1000);
 		audioSound('startGame');
 		playGame();
 	}
@@ -103,6 +103,7 @@ async function getNewCategory() {
 			.sort((a, b) => a.sort - b.sort)
 			.map((a) => a.value);
 	}
+
 	var newObjectProperty = await organizeData(questionsPull);
 
 	if (newObjectProperty === false) {
@@ -119,7 +120,76 @@ async function organizeData(data) {
 			return false;
 		}
 	}
+
 	currentCategoryObject[data.title] = data.clues;
+	// console.log(currentCategoryObject[data.title]);
+	for (var i = 0; i < 5; i++) {
+		if (
+			currentCategoryObject[data.title][0].question ===
+				currentCategoryObject[data.title][i].question &&
+			0 !== i
+		) {
+			// console.log('MATCH 0');
+			// console.log(
+			// 	`${currentCategoryObject[data.title][0].question} (0) vs (${i}) ${
+			// 		currentCategoryObject[data.title][i].question
+			// 	}`
+			// );
+			return false;
+		}
+		if (
+			currentCategoryObject[data.title][1].question ===
+				currentCategoryObject[data.title][i].question &&
+			1 !== i
+		) {
+			// console.log('MATCH 1');
+			// console.log(
+			// 	`${currentCategoryObject[data.title][1].question} (1) vs (${i}) ${
+			// 		currentCategoryObject[data.title][i].question
+			// 	}`
+			// );
+			return false;
+		}
+		if (
+			currentCategoryObject[data.title][2].question ===
+				currentCategoryObject[data.title][i].question &&
+			2 !== i
+		) {
+			// console.log('MATCH 2');
+			// console.log(
+			// 	`${currentCategoryObject[data.title][2].question} (2) vs (${i}) ${
+			// 		currentCategoryObject[data.title][i].question
+			// 	}`
+			// );
+			return false;
+		}
+		if (
+			currentCategoryObject[data.title][3].question ===
+				currentCategoryObject[data.title][i].question &&
+			3 !== i
+		) {
+			// console.log('MATCH 3');
+			// console.log(
+			// 	`${currentCategoryObject[data.title][3].question} (3) vs (${i}) ${
+			// 		currentCategoryObject[data.title][i].question
+			// 	}`
+			// );
+			return false;
+		}
+		if (
+			currentCategoryObject[data.title][4].question ===
+				currentCategoryObject[data.title][i].question &&
+			4 !== i
+		) {
+			// console.log('MATCH 4');
+			// console.log(
+			// 	`${currentCategoryObject[data.title][4].question} (4) vs (${i}) ${
+			// 		currentCategoryObject[data.title][i].question
+			// 	}`
+			// );
+			return false;
+		}
+	}
 	return currentCategoryObject;
 }
 
